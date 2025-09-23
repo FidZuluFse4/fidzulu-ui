@@ -15,9 +15,8 @@
     <mat-form-field appearance="outline" class="search-form-field">
       <input
         matInput
-        [(ngModel)]="searchQuery"
+        [formControl]="searchControl"
         placeholder="Search for products..."
-        (keyup.enter)="onSearch()"
       />
       <button
         mat-icon-button
@@ -39,7 +38,6 @@
     >
       <mat-icon>search</mat-icon>
     </button>
-
     <div class="nav-action-item">
       <mat-icon>shopping_cart</mat-icon>
       <span class="nav-action-text">Cart</span>
@@ -60,9 +58,8 @@
     <mat-form-field appearance="outline" class="search-form-field">
       <input
         matInput
-        [(ngModel)]="searchQuery"
+        [formControl]="searchControl"
         placeholder="Search for products..."
-        (keyup.enter)="onSearch()"
       />
       <button
         mat-icon-button

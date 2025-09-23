@@ -1,0 +1,68 @@
+<div class="page-wrapper">
+  <mat-tab-group
+    animationDuration="0ms"
+    (selectedTabChange)="onTabChange($event)"
+  >
+    <mat-tab *ngFor="let category of categories" [label]="category"></mat-tab>
+  </mat-tab-group>
+
+  <div class="content-container">
+    <aside class="sidebar">
+      <app-filter-sidebar
+        *ngIf="categoryFilters"
+        [attributes]="categoryFilters.attributes"
+        [minPrice]="categoryFilters.minPrice"
+        [maxPrice]="categoryFilters.maxPrice"
+        (filterChange)="onFilterChange($event)"
+      >
+      </app-filter-sidebar>
+    </aside>
+
+    <main class="main-content">
+      <div class="welcome-header">
+        <h2>
+          Welcome User, Select {{ activeCategory }} to buy.... find your perfect
+          ride!
+        </h2>
+      </div>
+      <div class="page-header">
+        <h1>Top Picks for Today</h1>
+      </div>
+
+      <div class="spinner-container" *ngIf="isLoading">
+        <mat-spinner></mat-spinner>
+      </div>
+
+      <div *ngIf="!isLoading">
+        <div
+          *ngIf="
+            activeProducts && activeProducts.length > 0;
+            else noProductsFound
+          "
+        >
+          <app-product-grid [products]="activeProducts"></app-product-grid>
+
+          <!-- --- THIS IS THE CHANGE --- -->
+          <!-- The options now start with 6 and are multiples of 3. -->
+          <mat-paginator
+            *ngIf="totalProducts > 0"
+            [length]="totalProducts"
+            [pageSize]="pageSize"
+            [pageIndex]="currentPage"
+            [pageSizeOptions]="[6, 9, 12, 18]"
+            (page)="onPageChange($event)"
+          >
+          </mat-paginator>
+        </div>
+
+        <ng-template #noProductsFound>
+          <div class="no-products-view">
+            <mat-icon class="no-products-icon">search_off</mat-icon>
+            <h2>No Products Found</h2>
+            <p>Try adjusting your filters to find what you're looking for.</p>
+          </div>
+        </ng-template>
+      </div>
+    </main>
+  </div>
+</div>

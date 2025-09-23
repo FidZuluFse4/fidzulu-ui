@@ -1,0 +1,42 @@
+.clear-filter-container {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.clear-filter-container button {
+  width: 100%;
+}
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section h4 {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.price-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+.checkbox-group {
+  display: flex;
+  flex-direction: column;
+  padding-top: 10px;
+}
+
+mat-checkbox {
+  margin-bottom: 8px;
+}
+
+.mat-expansion-panel-header-title {
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+}
