@@ -1,1 +1,36 @@
-<p>login works!</p>
+<div class="login-bg">
+	<div class="login-card">
+		<div class="login-header">
+			<span class="login-title">Log in</span>
+			<img src="assets/logo.PNG" alt="FidZulu Logo" class="login-logo" />
+		</div>
+		<form (ngSubmit)="onSubmitMock()" [formGroup]="loginForm">
+				<div class="form-group inputs">
+					<label for="username">Username</label>
+					<input type="email" id="username" name="username" class="form-control" formControlName="username" />
+					<div *ngIf="f['username'].touched && f['username'].invalid" class="error-message">
+						Enter a valid email.
+					</div>
+				</div>
+				<div class="form-group inputs">
+					<label for="password">Password</label>
+					<input type="password" id="password" name="password" class="form-control" formControlName="password" />
+				</div>
+				<div class="form-group remember-row">
+					<input type="checkbox" id="remember" name="remember" formControlName="remember" />
+					<label for="remember">Remember my username</label>
+				</div>
+				<div *ngIf="loginError" class="error-message login-error-message">
+					{{ loginError }}
+				</div>
+				<button type="submit" class="login-btn">Log in</button>
+		</form>
+		<div class="forgot-link">
+			<a href="#">Forgot username or password?</a>
+		</div>
+	</div>
+	<div class="signup-section">
+		<span>New to fidelity? </span>
+		<a href="register">Sign up</a>
+	</div>
+</div>
