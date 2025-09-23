@@ -1,0 +1,31 @@
+<header>
+  <div class="logo-container">
+    <img src="/assets/logo.PNG" alt="FidZulu Logo"/>
+  </div>
+
+  <div class="search-container">
+    <mat-form-field appearance="outline">
+      <mat-label>Search</mat-label>
+      <input matInput [(ngModel)]="searchQuery" placeholder="Search...">
+      <mat-icon matSuffix>search</mat-icon>
+    </mat-form-field>
+    <button mat-icon-button (click)="onSearch()">
+      <mat-icon>search</mat-icon>
+    </button>
+  </div>
+
+  <div class="nav-actions">
+    <div class="cart-container">
+      <mat-icon>shopping_cart</mat-icon>
+      <span>Cart</span>
+    </div>
+    <div class="wishlist">
+      <mat-icon>favorite</mat-icon>
+      <span>Wishlist</span>
+    </div>
+    <div class="log-out">
+      <mat-icon>logout</mat-icon>
+      <span>Log Out</span>
+    </div>
+  </div>
+</header>
