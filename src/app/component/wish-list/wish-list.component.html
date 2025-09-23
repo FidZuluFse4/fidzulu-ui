@@ -1,0 +1,26 @@
+<div class="wishlist-container">
+  <h2 class="title">Your Wish List</h2>
+
+  <ng-container *ngIf="wishlist.length === 0; else listBlock">
+    <mat-card class="empty-card">
+      <mat-icon color="primary">favorite_border</mat-icon>
+      <p>Looks like you don’t have any items in your Wish List yet</p>
+      <button mat-raised-button color="primary" routerLink="/products">Start Browsing</button>
+    </mat-card>
+  </ng-container>
+
+  <ng-template #listBlock>
+    <mat-card *ngFor="let product of wishlist" class="wishlist-item">
+      <img mat-card-image [src]="product.p_img_url" alt="{{ product.p_name }}" />
+      <mat-card-content>
+        <h3>{{ product.p_name }}</h3>
+        <p>{{ product.p_desc }}</p>
+        <p><strong>{{ product.p_price }} Points</strong></p>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-stroked-button color="accent" (click)="addToCart(product)">Add to Cart</button>
+        <button mat-stroked-button color="primary" (click)="removeFromWishlist(product.p_id)">Remove</button>
+      </mat-card-actions>
+    </mat-card>
+  </ng-template>
+</div>

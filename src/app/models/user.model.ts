@@ -1,5 +1,6 @@
 import { Product } from './product.model';
 import { Address } from './address.model';
+import { Order } from './order.model';
 
 export interface User {
   id: number;
@@ -8,5 +9,5 @@ export interface User {
   password: string;
   address: Address[];
   wishList: Product[];
-  cart: Product[];
+  cart: Order[];
 }

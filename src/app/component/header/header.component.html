@@ -14,15 +14,15 @@
   </div>
 
   <div class="nav-actions">
-    <div class="cart-container">
+    <div class="cart-container" (click)="goToCart()">
       <mat-icon>shopping_cart</mat-icon>
       <span>Cart</span>
     </div>
-    <div class="wishlist">
+    <div class="wishlist" (click)="goToWishlist()">
       <mat-icon>favorite</mat-icon>
       <span>Wishlist</span>
     </div>
-    <div class="log-out">
+    <div class="log-out" (click)="logOut()">
       <mat-icon>logout</mat-icon>
       <span>Log Out</span>
     </div>

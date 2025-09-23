@@ -1,0 +1,51 @@
+.wishlist-container {
+  padding: 2rem;
+  background-color: white;
+  color: black;
+
+  .title {
+    color: #5862D6;
+    margin-bottom: 1rem;
+  }
+
+  .empty-card {
+    text-align: center;
+    padding: 2rem;
+    border: 1px dashed #5862D6;
+    border-radius: 8px;
+
+    mat-icon {
+      font-size: 48px;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+  }
+
+  .wishlist-item {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+
+    mat-card-content {
+      padding: 1rem 0;
+
+      h3 {
+        margin: 0;
+        color: black;
+      }
+
+      p {
+        margin: 0.3rem 0;
+      }
+    }
+
+    mat-card-actions {
+      display: flex;
+      gap: 1rem;
+    }
+  }
+}
