@@ -1,6 +1,6 @@
 name: Angular Build
 
-# {1}
+# This workflow runs on any push or pull request to the main branch
 on:
   push:
     branches: [ "main" ]
@@ -13,24 +13,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-    steps:
-      # {2}
-      - name: Checkout the source code
-        uses: actions/checkout@v3
+        node-version: [20] 
 
-      # {3}
-      - name: Setup Node.js $
-        uses: actions/setup-node@v3
+    steps:
+      # 1. Checks out your repository's code
+      - name: Checkout the source code
+        uses: actions/checkout@v4 # Using the latest version of the action
+
+      # 2. Sets up the specified version of Node.js from the matrix
+      - name: Setup Node.js ${{ matrix.node-version }} # <-- FIX 1
+        uses: actions/setup-node@v4 # Using the latest version of the action
         with:
-          node-version: $
+          node-version: ${{ matrix.node-version }} # <-- FIX 2
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      # {4}
+      # 3. Installs dependencies securely and quickly
       - name: Install dependencies
         run: npm ci
-      # {5}
+
+      # 4. Builds your Angular application for production
       - name: Build
         run: npm run build
