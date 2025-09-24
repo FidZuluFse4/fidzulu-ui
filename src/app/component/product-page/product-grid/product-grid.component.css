@@ -62,6 +62,59 @@
 mat-card-content {
   flex-grow: 1; /* Allows content to fill space, pushing actions down */
 }
+/* Container for quantity buttons */
+.qty-selector {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* +/- buttons styling */
+.qty-selector button {
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #f5f5f5;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0;
+  min-width: 32px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.qty-selector button:hover {
+  background-color: #e0e0e0;
+}
+
+/* Input box for showing quantity */
+.qty-selector input {
+  width: 40px;
+  height: 32px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 32px;
+  pointer-events: none; /* make it readonly */
+  background-color: #fff;
+}
+
+/* Align Add to Cart button with quantity selector */
+.add-to-cart-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Optional: spacing inside mat-card-actions */
+mat-card-actions {
+  display: flex;
+  justify-content: center;
+  padding: 8px;
+}
+
 
 .add-to-cart-btn {
   width: 100%;

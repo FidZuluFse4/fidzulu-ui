@@ -4,7 +4,6 @@
     *ngFor="let product of products; trackBy: trackByProductId"
     (click)="goToProductDetails(product.p_id)"
   >
-    <!-- THIS IS THE NEW CONTAINER FOR THE IMAGE -->
     <div class="card-image-container">
       <img
         mat-card-image
@@ -18,15 +17,29 @@
       <div class="brand-name">{{ product.p_subtype }}</div>
       <div class="product-name">{{ product.p_name }}</div>
       <div class="product-price">
-        ₹{{ product.p_price.toLocaleString("en-IN") }}
+        ₹{{ product.p_price.toLocaleString('en-IN') }}
       </div>
     </mat-card-content>
 
-    <mat-card-actions>
-      <button mat-flat-button color="primary" class="add-to-cart-btn">
+    <mat-card-actions (click)="$event.stopPropagation()">
+      <!-- Show Add to Cart only if quantity is 0 -->
+      <button
+        mat-flat-button
+        color="primary"
+        class="add-to-cart-btn"
+        *ngIf="!getQuantity(product)"
+        (click)="addToCart(product)"
+      >
         <mat-icon>add_shopping_cart</mat-icon>
         Add to Cart
       </button>
+
+      <!-- Show quantity selector if product added -->
+      <div class="qty-selector" *ngIf="getQuantity(product)">
+        <button mat-mini-button (click)="decreaseQuantity(product)">−</button>
+        <input readonly [value]="getQuantity(product)" />
+        <button mat-mini-button (click)="increaseQuantity(product)">+</button>
+      </div>
     </mat-card-actions>
   </mat-card>
 </div>

@@ -5,27 +5,83 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { UserService } from '../../../services/user.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+interface ProductQuantity {
+  [p_id: number]: number;
+}
 
 @Component({
   selector: 'app-product-grid',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule],
+  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatSnackBarModule],
   templateUrl: './product-grid.component.html',
   styleUrl: './product-grid.component.css',
 })
 export class ProductGridComponent {
-  // @Input() is how the parent component sends data to this child.
   @Input() products: Product[] = [];
+  quantities: ProductQuantity = {};
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private snackBar: MatSnackBar
+  ) {}
 
-  // This is a performance best practice for ngFor loops.
   trackByProductId(index: number, product: Product): number {
     return product.p_id;
   }
 
-  // Navigate to product details page
   goToProductDetails(productId: number): void {
     this.router.navigate(['/product', productId]);
+  }
+
+  // Get current quantity or 0 if not added yet
+  getQuantity(product: Product): number {
+    return this.quantities[product.p_id] || 0;
+  }
+
+  // Add to cart button clicked
+  addToCart(product: Product) {
+    // Initialize quantity to 1
+    this.quantities[product.p_id] = 1;
+    this.updateCart(product);
+  }
+
+  // Increase quantity
+  increaseQuantity(product: Product) {
+    this.quantities[product.p_id] = (this.quantities[product.p_id] || 0) + 1;
+    this.updateCart(product);
+  }
+
+  // Decrease quantity
+  decreaseQuantity(product: Product) {
+    if (!this.quantities[product.p_id]) return;
+    this.quantities[product.p_id]--;
+    this.updateCart(product);
+
+    // If quantity is 0, remove from cart UI
+    if (this.quantities[product.p_id] <= 0) {
+      delete this.quantities[product.p_id];
+    }
+  }
+
+  // Update cart automatically via service
+  private updateCart(product: Product) {
+    const quantity = this.quantities[product.p_id] || 0;
+    if (quantity <= 0) return;
+
+    this.userService.addToCart(product.p_id, quantity).subscribe({
+      next: () => {
+        this.snackBar.open(`${quantity} of ${product.p_name} added to cart`, 'Close', {
+          duration: 2000,
+        });
+      },
+      error: (err) => {
+        console.error('Error updating cart:', err);
+        this.snackBar.open('Failed to update cart. Try again.', 'Close', { duration: 2000 });
+      },
+    });
   }
 }
