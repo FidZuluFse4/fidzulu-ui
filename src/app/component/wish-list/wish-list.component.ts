@@ -30,7 +30,7 @@ export class WishListComponent implements OnInit {
   pageIndex = 0;
 
   // quantities map: product id -> quantity
-  quantities: { [p_id: number]: number } = {};
+  quantities: { [p_id: string]: number } = {};
 
   constructor(
     private userService: UserService,
@@ -38,7 +38,7 @@ export class WishListComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-  goToProductDetails(productId: number) {
+  goToProductDetails(productId: string) {
     this.router.navigate(['/product', productId]);
   }
 
@@ -71,7 +71,7 @@ export class WishListComponent implements OnInit {
     this.updateCart(product);
   }
 
-  removeFromWishlist(p_id: number) {
+  removeFromWishlist(p_id: string) {
     this.userService.removeFromWishlist(p_id).subscribe(() => {
       this.wishlist = this.wishlist.filter((p) => p.p_id !== p_id);
     });

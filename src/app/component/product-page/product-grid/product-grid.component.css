@@ -4,6 +4,28 @@
   gap: 20px;
 }
 
+.currency-switcher {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.wishlist-heart {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .product-card {
   text-align: center;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -115,7 +137,6 @@ mat-card-actions {
   padding: 8px;
 }
 
-
 .add-to-cart-btn {
   width: 100%;
   height: 38px;
@@ -139,4 +160,14 @@ mat-card-actions {
   .product-grid-container {
     grid-template-columns: 1fr;
   }
+}
+
+/* Accessibility helper */
+.visually-hidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
 }

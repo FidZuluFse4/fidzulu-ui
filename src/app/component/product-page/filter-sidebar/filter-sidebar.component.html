@@ -22,19 +22,19 @@
 
     <!-- The accordion for all other attributes -->
     <mat-accordion multi="false">
-      <mat-expansion-panel *ngFor="let group of attributes | keyvalue">
+      <mat-expansion-panel *ngFor="let group of cleanedGroups">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{ group.key }}
+            {{ group.display }}
           </mat-panel-title>
         </mat-expansion-panel-header>
 
         <div class="checkbox-group">
           <mat-checkbox
-            *ngFor="let option of group.value"
-            [formControlName]="group.key + '_' + option"
+            *ngFor="let option of group.options"
+            [formControlName]="controlName(group.key, option)"
           >
-            {{ option }}
+            {{ formatOptionValue(option) }}
           </mat-checkbox>
         </div>
       </mat-expansion-panel>

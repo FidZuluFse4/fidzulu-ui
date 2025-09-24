@@ -44,6 +44,10 @@ export class FilterSidebarComponent implements OnChanges, OnDestroy {
   filterForm!: FormGroup;
   isFilterActive = false;
   private formSubscription!: Subscription;
+  // Cleaned groups used by the template: filters out null/undefined/empty values
+  cleanedGroups: Array<{ key: string; display: string; options: any[] }> = [];
+  // Separator used to build form control names (rare string to avoid collisions)
+  readonly CONTROL_SEP = '___SEP___';
 
   ngOnDestroy(): void {
     if (this.formSubscription) {
@@ -71,11 +75,30 @@ export class FilterSidebarComponent implements OnChanges, OnDestroy {
       price: new FormControl(this.maxPrice),
     });
 
+    // Build cleanedGroups and add controls only for valid options
+    this.cleanedGroups = [];
     this.attributes.forEach((options, groupName) => {
+      const validOptions: any[] = [];
       options.forEach((option) => {
-        const controlName = `${groupName}_${option}`;
-        this.filterForm.addControl(controlName, new FormControl(false));
+        // Filter out null/undefined and empty-string-like values (but keep 0)
+        if (option === null || option === undefined) return;
+        const s = String(option).trim();
+        if (s === '' || s.toLowerCase() === 'null') return;
+        validOptions.push(option);
       });
+
+      if (validOptions.length > 0) {
+        this.cleanedGroups.push({
+          key: groupName,
+          display: this.formatGroupLabel(groupName),
+          options: validOptions,
+        });
+
+        validOptions.forEach((option) => {
+          const controlName = this.controlName(groupName, option);
+          this.filterForm.addControl(controlName, new FormControl(false));
+        });
+      }
     });
 
     this.formSubscription = this.filterForm.valueChanges.subscribe((values) => {
@@ -89,6 +112,41 @@ export class FilterSidebarComponent implements OnChanges, OnDestroy {
     this.filterChange.emit(this.filterForm.value);
 
     this.checkIfFilterIsActive(this.filterForm.value);
+  }
+
+  controlName(group: string, option: any): string {
+    return `${group}${this.CONTROL_SEP}${String(option)}`;
+  }
+
+  private formatGroupLabel(key: string): string {
+    if (!key) return '';
+    // If already Title case like 'Brand', return as-is
+    if (/^[A-Z][a-z]+(\s[A-Z][a-z]+)*$/.test(key)) return key;
+
+    // Replace underscores with spaces and split camelCase
+    const withSpaces = key
+      .replace(/_/g, ' ')
+      .replace(/([a-z])([A-Z])/g, '$1 $2');
+
+    // Title case each word
+    return withSpaces
+      .split(' ')
+      .filter((w) => w.length > 0)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ');
+  }
+
+  formatOptionValue(option: any): string {
+    if (option === null || option === undefined) return '';
+    const s = String(option);
+    // show '0' as '0', otherwise title case words
+    if (/^\d+$/.test(s)) return s;
+    return s
+      .replace(/_/g, ' ')
+      .replace(/([a-z])([A-Z])/g, '$1 $2')
+      .split(' ')
+      .map((w) => (w ? w.charAt(0).toUpperCase() + w.slice(1) : ''))
+      .join(' ');
   }
 
   private checkIfFilterIsActive(values: any): void {
