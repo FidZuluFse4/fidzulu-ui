@@ -9,7 +9,7 @@ import { UserService } from '../../../services/user.service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 interface ProductQuantity {
-  [p_id: number]: number;
+  [p_id: string]: number;
 }
 
 @Component({
@@ -28,7 +28,7 @@ interface ProductQuantity {
 export class ProductGridComponent implements OnInit {
   @Input() products: Product[] = [];
   quantities: ProductQuantity = {};
-  wishlistIds: Set<number> = new Set();
+  wishlistIds: Set<string> = new Set();
 
   constructor(
     private router: Router,
@@ -42,11 +42,11 @@ export class ProductGridComponent implements OnInit {
     });
   }
 
-  trackByProductId(index: number, product: Product): number {
+  trackByProductId(index: number, product: Product): string {
     return product.p_id;
   }
 
-  goToProductDetails(productId: number): void {
+  goToProductDetails(productId: string): void {
     this.router.navigate(['/product', productId]);
   }
 

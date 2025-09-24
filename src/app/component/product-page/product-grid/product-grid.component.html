@@ -1,4 +1,5 @@
 <div class="product-grid-container">
+  <!-- Currency is auto-selected based on the Address selected in the header; manual selector removed -->
   <mat-card
     class="product-card"
     *ngFor="let product of products; trackBy: trackByProductId"
@@ -14,24 +15,10 @@
       <button
         class="wishlist-heart"
         (click)="$event.stopPropagation(); addToWishlist(product)"
-        style="
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          background: rgba(255, 255, 255, 0.7);
-          border: none;
-          border-radius: 50%;
-          padding: 6px;
-          cursor: pointer;
-          z-index: 3;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        "
       >
-        <mat-icon style="font-size: 28px; color: red">
-          {{ wishlistIds.has(product.p_id) ? "favorite" : "favorite_border" }}
-        </mat-icon>
+        <mat-icon class="wishlist-icon">{{
+          wishlistIds.has(product.p_id) ? "favorite" : "favorite_border"
+        }}</mat-icon>
       </button>
     </div>
 
@@ -39,7 +26,7 @@
       <div class="brand-name">{{ product.p_subtype }}</div>
       <div class="product-name">{{ product.p_name }}</div>
       <div class="product-price">
-        ₹{{ product.p_price.toLocaleString("en-IN") }}
+        {{ product.p_currency }} {{ product.p_price | number : "1.0-2" }}
       </div>
     </mat-card-content>
 
@@ -59,7 +46,17 @@
       <!-- Show quantity selector if product added -->
       <div class="qty-selector" *ngIf="getQuantity(product)">
         <button mat-mini-button (click)="decreaseQuantity(product)">−</button>
-        <input readonly [value]="getQuantity(product)" />
+        <label [attr.for]="'qty-' + product.p_id" class="visually-hidden"
+          >Quantity for {{ product.p_name }}</label
+        >
+        <input
+          id="{{ 'qty-' + product.p_id }}"
+          readonly
+          [value]="getQuantity(product)"
+          placeholder="Qty"
+          [attr.aria-label]="'Quantity for ' + product.p_name"
+          [title]="'Quantity for ' + product.p_name"
+        />
         <button mat-mini-button (click)="increaseQuantity(product)">+</button>
       </div>
     </mat-card-actions>

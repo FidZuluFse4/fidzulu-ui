@@ -3,7 +3,7 @@ import { Address } from './address.model';
 import { Order } from './order.model';
 
 export interface User {
-  id: number;
+  id: string;
   name: string;
   username: string;
   password: string;
