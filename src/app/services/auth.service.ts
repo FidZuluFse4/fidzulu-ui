@@ -1,15 +1,14 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, switchMap, tap } from 'rxjs';
 
 import { of, throwError } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
-
   /**
    * Returns true if a valid auth token is present in sessionStorage.
    */
@@ -29,33 +28,46 @@ export class AuthService {
     // Add any other cleanup if needed
   }
 
-  private middlewareUrl_local_login = "https://yb2t3volwkwisgyiuj72w3p25y0csyfc.lambda-url.ap-southeast-2.on.aws/api/auth/login";
-  private middlewareUrl_local_register = "https://yb2t3volwkwisgyiuj72w3p25y0csyfc.lambda-url.ap-southeast-2.on.aws/api/auth/register";
+  // Use committed environment.ts values (non-secret). For secret/staging hosts,
+  // update this file or use your own mechanism in CI/CD.
+  private middlewareUrl_local_login = environment.lambda_1
+    ? `${environment.lambda_1}/api/auth/login`
+    : '';
 
-  constructor(private http: HttpClient) { }
+  private middlewareUrl_local_register = environment.lambda_1
+    ? `${environment.lambda_1}/api/auth/register`
+    : '';
+
+  constructor(private http: HttpClient) {}
 
   /**
    * Calls Node.js middleware for login, stores token in sessionStorage.
    */
-  login(username: string, password: string, remember: boolean): Observable<any> {
-    const body = { email:username, password: password };
-    console.log("Body: " + body);
-    return this.http.post<{ user_id: string, token: string }> (
-      this.middlewareUrl_local_login,
-      body
-    ).pipe(
-      tap(res => {
-        if (res && res.token) {
-          sessionStorage.setItem('auth_token', res.token);
-          sessionStorage.setItem('user_id', res.user_id);
-          if (remember) {
-            sessionStorage.setItem('remembered_username', username);
-          } else {
-            sessionStorage.removeItem('remembered_username');
+  login(
+    username: string,
+    password: string,
+    remember: boolean
+  ): Observable<any> {
+    const body = { email: username, password: password };
+    console.log('Body: ' + body);
+    return this.http
+      .post<{ user_id: string; token: string }>(
+        this.middlewareUrl_local_login,
+        body
+      )
+      .pipe(
+        tap((res) => {
+          if (res && res.token) {
+            sessionStorage.setItem('auth_token', res.token);
+            sessionStorage.setItem('user_id', res.user_id);
+            if (remember) {
+              sessionStorage.setItem('remembered_username', username);
+            } else {
+              sessionStorage.removeItem('remembered_username');
+            }
           }
-        }
-      })
-    );
+        })
+      );
   }
 
   /**
@@ -69,16 +81,25 @@ export class AuthService {
     location: string,
     address: string
   ): Observable<any> {
-    const body = {name: firstName + " " + lastName, email: username, password: password, addresses: [{location: location, full_address: address}]};
-    const res = this.http.post<{ user_id: string, name: string, email: string }>(this.middlewareUrl_local_register, body);
-    console.log("Register response: " + res);
+    const body = {
+      name: firstName + ' ' + lastName,
+      email: username,
+      password: password,
+      addresses: [{ location: location, full_address: address }],
+    };
+    const res = this.http.post<{
+      user_id: string;
+      name: string;
+      email: string;
+    }>(this.middlewareUrl_local_register, body);
+    console.log('Register response: ' + res);
     return res;
   }
 
-  getCurrentUser(): { user_id: string | null, auth_token: string | null } {
+  getCurrentUser(): { user_id: string | null; auth_token: string | null } {
     return {
       user_id: sessionStorage.getItem('user_id'),
-      auth_token: sessionStorage.getItem('auth_token')
-    }
-    }
+      auth_token: sessionStorage.getItem('auth_token'),
+    };
+  }
 }
