@@ -31,6 +31,8 @@ export class ProductService {
   public readonly isLoading$ = this.isLoadingSubject.asObservable();
   private addressListenerStarted = false;
   private bikeBase = environment.bikeUrl;
+  // Separator used by filter sidebar to build control names
+  private readonly FILTER_CONTROL_SEP = '___SEP___';
 
   constructor(
     private http: HttpClient,
@@ -218,28 +220,52 @@ export class ProductService {
 
         // Step 3: Then, apply the sidebar filters
         if (filters) {
-          if (filters.price) {
+          // Price filter: guard for 0 and explicit presence
+          if (typeof filters.price !== 'undefined' && filters.price !== null) {
+            const priceLimit = Number(filters.price) || 0;
             filteredProducts = filteredProducts.filter(
-              (p) => p.p_price <= filters.price
+              (p) => Number(p.p_price) <= priceLimit
             );
           }
+
           const activeAttributeFilters = new Map<string, string[]>();
           for (const key in filters) {
-            if (key !== 'price' && filters[key] === true) {
-              const [group, value] = key.split('_');
-              if (!activeAttributeFilters.has(group))
-                activeAttributeFilters.set(group, []);
-              activeAttributeFilters.get(group)?.push(value);
+            if (key === 'price') continue;
+            if (filters[key] !== true) continue;
+
+            // Parse control names using the expected separator from the sidebar.
+            let group = '';
+            let value = '';
+            if (key.includes(this.FILTER_CONTROL_SEP)) {
+              [group, value] = key.split(this.FILTER_CONTROL_SEP);
+            } else if (key.includes('_')) {
+              // fallback to older underscore parsing
+              [group, value] = key.split('_');
+            } else {
+              continue;
             }
+
+            group = String(group);
+            value = String(value);
+
+            if (!activeAttributeFilters.has(group))
+              activeAttributeFilters.set(group, []);
+            activeAttributeFilters.get(group)?.push(value);
           }
+
           if (activeAttributeFilters.size > 0) {
             filteredProducts = filteredProducts.filter((product) => {
               return Array.from(activeAttributeFilters.entries()).every(
                 ([group, values]) => {
+                  // Special-case Brand which is stored in p_subtype
                   if (group === 'Brand')
-                    return values.includes(product.p_subtype || '');
-                  if (product.attribute && product.attribute[group])
-                    return values.includes(product.attribute[group]);
+                    return values.includes(String(product.p_subtype || ''));
+
+                  // For attribute-based filters compare string values to handle numbers
+                  if (product.attribute && product.attribute[group] != null) {
+                    const attrVal = String(product.attribute[group]);
+                    return values.includes(attrVal);
+                  }
                   return false;
                 }
               );
@@ -282,8 +308,12 @@ export class ProductService {
             attributes.get('Brand')?.add(product.p_subtype);
           }
           for (const key in product.attribute) {
+            const val = product.attribute[key];
+            if (val === null || val === undefined) continue;
+            const s = String(val).trim();
+            if (s === '' || s.toLowerCase() === 'null') continue;
             if (!attributes.has(key)) attributes.set(key, new Set<string>());
-            attributes.get(key)?.add(product.attribute[key]);
+            attributes.get(key)?.add(val);
           }
         });
         return { attributes, minPrice, maxPrice };
