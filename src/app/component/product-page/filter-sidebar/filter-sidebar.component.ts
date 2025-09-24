@@ -6,10 +6,12 @@ import {
   OnDestroy,
   Output,
   SimpleChanges,
+  OnInit,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { AddressService } from '../../../services/address/address.service';
 
 // --- Angular Material Modules ---
 import { MatCardModule } from '@angular/material/card';
@@ -35,24 +37,40 @@ import { MatIconModule } from '@angular/material/icon';
   templateUrl: './filter-sidebar.component.html',
   styleUrls: ['./filter-sidebar.component.css'],
 })
-export class FilterSidebarComponent implements OnChanges, OnDestroy {
+export class FilterSidebarComponent implements OnChanges, OnDestroy, OnInit {
   @Input() attributes = new Map<string, Set<string>>();
   @Input() minPrice: number = 0;
   @Input() maxPrice: number = 1000;
+
   @Output() filterChange = new EventEmitter<any>();
 
   filterForm!: FormGroup;
   isFilterActive = false;
   private formSubscription!: Subscription;
+  currentCurrencySymbol: string = '$';
+  private addressSub?: Subscription;
   // Cleaned groups used by the template: filters out null/undefined/empty values
   cleanedGroups: Array<{ key: string; display: string; options: any[] }> = [];
   // Separator used to build form control names (rare string to avoid collisions)
   readonly CONTROL_SEP = '___SEP___';
 
+  constructor(private addressService: AddressService) {}
+
   ngOnDestroy(): void {
     if (this.formSubscription) {
       this.formSubscription.unsubscribe();
     }
+    if (this.addressSub) {
+      this.addressSub.unsubscribe();
+    }
+  }
+
+  ngOnInit(): void {
+    this.addressSub = this.addressService
+      .getSelectedAddress()
+      .subscribe((addr) => {
+        this.currentCurrencySymbol = this.locationToSymbol(addr?.location);
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -112,6 +130,21 @@ export class FilterSidebarComponent implements OnChanges, OnDestroy {
     this.filterChange.emit(this.filterForm.value);
 
     this.checkIfFilterIsActive(this.filterForm.value);
+  }
+
+  private locationToSymbol(location?: string): string {
+    if (!location) return '$';
+    const l = location.toLowerCase();
+    if (l.includes('india') || l === 'in') return '₹';
+    if (l.includes('ireland') || l === 'ir') return '€';
+    if (
+      l.includes('usa') ||
+      l.includes('united') ||
+      l.includes('america') ||
+      l === 'us'
+    )
+      return '$';
+    return '$';
   }
 
   controlName(group: string, option: any): string {

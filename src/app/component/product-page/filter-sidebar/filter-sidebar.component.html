@@ -11,12 +11,18 @@
     <!-- The Price Range section -->
     <section class="filter-section">
       <h4>Price Range</h4>
-      <mat-slider [min]="minPrice" [max]="maxPrice">
+      <mat-slider [min]="minPrice" [max]="maxPrice" class="mat-slider">
         <input matSliderThumb formControlName="price" />
       </mat-slider>
       <div class="price-labels">
-        <span>₹{{ minPrice.toLocaleString("en-IN") }}</span>
-        <span>₹{{ maxPrice.toLocaleString("en-IN") }}</span>
+        <span
+          >{{ currentCurrencySymbol
+          }}{{ minPrice.toLocaleString("en-IN") }}</span
+        >
+        <span
+          >{{ currentCurrencySymbol
+          }}{{ maxPrice.toLocaleString("en-IN") }}</span
+        >
       </div>
     </section>
 
