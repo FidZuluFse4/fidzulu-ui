@@ -11,8 +11,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 interface ProductQuantity {
   [p_id: number]: number;
 }
-import { UserService } from '../../../services/user.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-grid',
