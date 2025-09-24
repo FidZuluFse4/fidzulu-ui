@@ -4,10 +4,6 @@ import { Order } from '../models/order.model';
 import { BehaviorSubject } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User } from '../models/user.model';
-import { HttpClient } from '@angular/common/http';
-import { Order } from '../models/order.model';
-
 @Injectable({
   providedIn: 'root',
 })

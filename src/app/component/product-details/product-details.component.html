@@ -1,0 +1,37 @@
+<main class="product-container" *ngIf="product">
+  <!-- Left: gallery -->
+  <div class="gallery">
+    <div class="main-image">
+      <img [src]="product.p_img_url" [alt]="product.p_name" />
+      <button class="wishlist-heart" (click)="addToWishlist()">
+        <mat-icon>{{
+          isInWishlist() ? "favorite" : "favorite_border"
+        }}</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Right: details -->
+  <aside class="details">
+    <h1>{{ product.p_name }}</h1>
+
+    <div class="points">{{ product.p_price }} {{ product.p_currency }}</div>
+    <div class="free-shipping">🚚 Free shipping</div>
+    <div class="availability">📦 Usually ships within 5 business days</div>
+
+    <div class="purchase-row">
+      <div class="qty">
+        <button (click)="decrease()">−</button>
+        <input readonly [value]="product.p_quantity" />
+        <button (click)="increase()">+</button>
+      </div>
+
+      <button class="add" (click)="addToCart()">Add to Cart</button>
+    </div>
+
+    <section class="description">
+      <h2>Product description</h2>
+      <p>{{ product.p_desc }}</p>
+    </section>
+  </aside>
+</main>
