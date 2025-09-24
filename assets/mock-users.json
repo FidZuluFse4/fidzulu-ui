@@ -1,8 +1,31 @@
-[
-  {
-    "id": 1,
-    "username": "test@example.com",
-    "password": "password123",
-    "token": "mock-token-abc123"
-  }
-]
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "test@example.com",
+      "password": "password123",
+      "token": "mock-token-abc123"
+    },
+    {
+      "id": 2,
+      "username": "test2@example.com",
+      "password": "password123",
+      "token": "mock-token-abc123"
+    },
+    {
+      "id": null,
+      "name": "RamnareshU",
+      "username": "ramnareshnathan@gmail.com",
+      "password": "Password@123",
+      "address": "29 Cross Street"
+    },
+    {
+      "id": null,
+      "name": "Ramnaresh U",
+      "username": "ramnareshnathan@icloud.com",
+      "password": "MyPass@447",
+      "address": "29 Cross Street",
+      "token": "mock-token-abc123"
+    }
+  ]
+}
