@@ -1,8 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, map, of } from 'rxjs';
 import { Product } from '../models/product.model';
+import { Observable } from 'rxjs';
 
 // --- INTERFACES ---
 export interface PagedProducts {
@@ -15,8 +14,6 @@ export interface CategoryFilters {
   minPrice: number;
   maxPrice: number;
 }
-import { Observable } from 'rxjs';
-import { Product } from '../models/product.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +21,15 @@ import { Product } from '../models/product.model';
 export class ProductService {
   private productsUrl = 'assets/products.json';
   private allProductsCache: Product[] | null = null;
+  private baseUrl = 'http://localhost:3000';
 
+  getAllProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(`${this.baseUrl}/products`);
+  }
+
+  getProductById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.baseUrl}/products/${id}`);
+  }
   constructor(private http: HttpClient) {}
 
   private fetchAndCacheProducts(): Observable<Product[]> {
