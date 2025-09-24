@@ -128,4 +128,9 @@ export class AuthService {
       auth_token: getCookie('auth_token'),
     };
   }
+
+  /** Returns raw auth token (JWT) or null */
+  getToken(): string | null {
+    return getCookie('auth_token');
+  }
 }
