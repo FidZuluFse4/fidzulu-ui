@@ -28,19 +28,23 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 4. Build Angular app with correct base href
+      # 4. Build Angular app for production with correct base-href
       - name: Build Angular app
         run: npm run build -- --configuration production --base-href /fidzulu-ui/
 
-      # 5. Debug: List dist folder to ensure build succeeded
-      - name: List build output
-        run: ls -R dist
+      # 5. Debug: List dist folder to confirm output
+      - name: List dist folder
+        run: ls -R dist/fidzulu-ui
 
-      # 6. SPA fallback: Copy index.html to 404.html for Angular routing
+      # 6. SPA fallback for Angular routing
       - name: Add SPA fallback
         run: cp dist/fidzulu-ui/index.html dist/fidzulu-ui/404.html
 
-      # 7. Deploy to GitHub Pages (gh-pages branch)
+      # 7. Add .nojekyll to prevent Pages from ignoring assets
+      - name: Add .nojekyll
+        run: touch dist/fidzulu-ui/.nojekyll
+
+      # 8. Deploy to GitHub Pages (gh-pages branch)
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
