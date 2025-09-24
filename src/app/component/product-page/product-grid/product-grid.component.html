@@ -1,0 +1,26 @@
+<div class="product-grid-container">
+  <mat-card
+    class="product-card"
+    *ngFor="let product of products; trackBy: trackByProductId"
+  >
+    <!-- THIS IS THE NEW CONTAINER FOR THE IMAGE -->
+    <div class="card-image-container">
+      <img mat-card-image [src]="product.p_img_url" [alt]="product.p_name" />
+    </div>
+
+    <mat-card-content>
+      <div class="brand-name">{{ product.p_subtype }}</div>
+      <div class="product-name">{{ product.p_name }}</div>
+      <div class="product-price">
+        ₹{{ product.p_price.toLocaleString("en-IN") }}
+      </div>
+    </mat-card-content>
+
+    <mat-card-actions>
+      <button mat-flat-button color="primary" class="add-to-cart-btn">
+        <mat-icon>add_shopping_cart</mat-icon>
+        Add to Cart
+      </button>
+    </mat-card-actions>
+  </mat-card>
+</div>

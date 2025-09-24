@@ -1,0 +1,77 @@
+.footer-toolbar {
+  background-color: #232f3e;
+  color: #ffffff;
+  padding: 40px 20px;
+  height: auto;
+  flex-direction: column;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr; /* Info | Links | Social */
+  gap: 40px;
+  width: 100%;
+  max-width: 1000px; /* This is the fix for the wide space */
+  margin: 0 auto;
+}
+
+.footer-column h4 {
+  font-size: 18px;
+  margin-bottom: 15px;
+  border-bottom: 2px solid #485769;
+  padding-bottom: 10px;
+}
+
+.footer-column p {
+  overflow-wrap: break-word;
+  padding-right: 20px;
+}
+
+.footer-column p,
+.footer-column ul {
+  font-size: 14px;
+  color: #dddddd;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+}
+
+.footer-column a {
+  color: #dddddd;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-column a:hover {
+  color: #f0c14b;
+}
+
+.social-icons button {
+  color: #ffffff;
+}
+
+.footer-bottom {
+  width: 100%;
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #3a4553;
+  font-size: 13px;
+  color: #999999;
+}
+
+/* On smaller screens, stack the columns vertically */
+@media (max-width: 768px) {
+  .footer-container {
+    grid-template-columns: 1fr; /* A single column */
+    text-align: center; /* Center text on mobile */
+  }
+
+  .footer-column p {
+    padding-right: 0; /* Remove extra padding on mobile */
+  }
+}

@@ -1,0 +1,116 @@
+/* We keep the wrapper for padding, but without a max-width as you wanted */
+.page-wrapper {
+  padding: 0 24px;
+}
+
+/* --- MAIN LAYOUT --- */
+.content-container {
+  display: grid;
+  /* We make the sidebar a little slimmer */
+  grid-template-columns: 260px 1fr;
+  gap: 30px;
+  padding: 24px 0;
+}
+
+.sidebar {
+  position: sticky;
+  top: 20px;
+  align-self: start;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+}
+
+.main-content {
+  min-width: 0;
+}
+
+/* --- HEADER TEXT SIZE REDUCTION --- */
+.welcome-header {
+  margin-bottom: 20px;
+}
+.welcome-header h2 {
+  /* Reduced font size for a cleaner look */
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin: 0;
+  color: #333;
+}
+
+.page-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
+}
+.page-header h1 {
+  /* Reduced font size for the main heading */
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* --- UTILITY & STATE STYLES --- */
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+mat-paginator {
+  margin-top: 30px;
+  background: transparent;
+}
+
+.no-products-view {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+  text-align: center;
+  color: #777;
+  background-color: #f9f9f9;
+  border: 1px dashed #ddd;
+  border-radius: 8px;
+  padding: 20px;
+}
+
+.no-products-icon {
+  font-size: 50px;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 16px;
+}
+
+.no-products-view h2 {
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.no-products-view p {
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
+/* ############ RESPONSIVE STYLES ############ */
+@media (max-width: 1024px) {
+  .page-wrapper {
+    padding: 0 16px;
+  }
+  .content-container {
+    grid-template-columns: 240px 1fr;
+    gap: 20px;
+  }
+}
+
+@media (max-width: 900px) {
+  .content-container {
+    grid-template-columns: 1fr;
+  }
+  .sidebar {
+    position: static;
+    max-height: none;
+    overflow-y: visible;
+  }
+}

@@ -1,0 +1,586 @@
+[
+  {
+    "p_id": 101,
+    "p_type": "Bike",
+    "p_subtype": "TrailBlazer",
+    "p_name": "Mountain Pro 29\"",
+    "p_desc": "A professional-grade mountain bike with a lightweight carbon fiber frame and superior suspension.",
+    "p_price": 75000,
+    "p_img_url": "https://hpcbikes.com/cdn/shop/files/TrailblazerPRO2website3-2.jpg?v=1756315004&width=1000",
+    "attribute": {
+      "Color": "Matte Black",
+      "Frame Material": "Carbon Fiber",
+      "Frame Size": "19 inch",
+      "Suspension": "Full"
+    },
+    "p_quantity": 15
+  },
+  {
+    "p_id": 102,
+    "p_type": "Bike",
+    "p_subtype": "Speedster",
+    "p_name": "Aero Road R1",
+    "p_desc": "An aerodynamic road bike designed for speed and performance on paved roads.",
+    "p_price": 92000,
+    "p_img_url": "https://velostudio.in/cdn/shop/files/v8c9XOs2VQeKmabr.jpg?v=1745306212&width=900",
+    "attribute": {
+      "Color": "Glossy Red",
+      "Frame Material": "Aluminum",
+      "Frame Size": "21 inch",
+      "Groupset": "Shimano Ultegra"
+    },
+    "p_quantity": 12
+  },
+  {
+    "p_id": 103,
+    "p_type": "Bike",
+    "p_subtype": "CityGlide",
+    "p_name": "Urban Commuter X",
+    "p_desc": "A comfortable and reliable bike for daily city commuting with a built-in rack.",
+    "p_price": 22000,
+    "p_img_url": "https://reidbikes.com/cdn/shop/files/3-12.png?v=1730606871",
+    "attribute": {
+      "Color": "Ocean Blue",
+      "Frame Material": "Steel",
+      "Frame Size": "17 inch",
+      "Gears": "7-Speed"
+    },
+    "p_quantity": 25
+  },
+  {
+    "p_id": 104,
+    "p_type": "Bike",
+    "p_subtype": "TerraFirm",
+    "p_name": "Hybrid Tourer H1",
+    "p_desc": "A versatile hybrid bike, perfect for both city streets and light trails.",
+    "p_price": 31000,
+    "p_img_url": "https://d2f9uwgpmber13.cloudfront.net/public/uploads/mobile/c105a1ca84d11854bab3009bd66f19ca",
+    "attribute": {
+      "Color": "Pearl White",
+      "Frame Material": "Aluminum",
+      "Frame Size": "18 inch",
+      "Suspension": "Front"
+    },
+    "p_quantity": 20
+  },
+  {
+    "p_id": 105,
+    "p_type": "Bike",
+    "p_subtype": "KidVenture",
+    "p_name": "Sparkle 16\" Kids Bike",
+    "p_desc": "A safe and fun first bike for kids, with removable training wheels.",
+    "p_price": 8500,
+    "p_img_url": "https://cdn.shoplightspeed.com/shops/661308/files/55843272/1652x2313x2/malvern-star-malvern-star-sparkle-16-kids-bike.jpg",
+    "attribute": {
+      "Color": "Neon Green",
+      "Frame Material": "Steel",
+      "Frame Size": "16 inch",
+      "Gears": "Single-Speed"
+    },
+    "p_quantity": 40
+  },
+  {
+    "p_id": 106,
+    "p_type": "Bike",
+    "p_subtype": "TrailBlazer",
+    "p_name": "Fat Tire Explorer",
+    "p_desc": "Dominate any terrain, from sand to snow, with these extra-wide fat tires.",
+    "p_price": 68000,
+    "p_img_url": "https://viviebikes.com/cdn/shop/files/vivi-f26ful-long-range-ultimate-fat-tire-electric-bike-ul2849-certified-4.jpg",
+    "attribute": {
+      "Color": "Matte Black",
+      "Frame Material": "Aluminum",
+      "Frame Size": "19 inch",
+      "Suspension": "Front"
+    },
+    "p_quantity": 8
+  },
+  {
+    "p_id": 107,
+    "p_type": "Bike",
+    "p_subtype": "Speedster",
+    "p_name": "Track Elite",
+    "p_desc": "A single-speed track bike for competitive racing in a velodrome.",
+    "p_price": 55000,
+    "p_img_url": "https://sportnetwork.in/_next/image?url=https%3A%2F%2Fadmin.sportnetwork.in%2Fuploads%2Fproducts%2Fimages%2Fmedium%2FQxoSn0ZbTiXLC6Yg.jpg&w=1080&q=75",
+    "attribute": {
+      "Color": "Glossy Red",
+      "Frame Material": "Carbon Fiber",
+      "Frame Size": "20 inch",
+      "Gears": "Single-Speed"
+    },
+    "p_quantity": 18
+  },
+  {
+    "p_id": 201,
+    "p_type": "Food",
+    "p_subtype": "Organic Grains",
+    "p_name": "Basmati Rice (5kg)",
+    "p_desc": "Premium quality, long-grain organic basmati rice for delicious biryanis and pulao.",
+    "p_price": 850,
+    "p_img_url": "https://placehold.co/400x300/2ECC71/FFFFFF?text=Basmati+Rice",
+    "attribute": {
+      "Dietary Preference": "Vegetarian",
+      "Cuisine": "Indian",
+      "Organic": "Yes"
+    },
+    "p_quantity": 150
+  },
+  {
+    "p_id": 202,
+    "p_type": "Food",
+    "p_subtype": "Healthy Oils",
+    "p_name": "Cold-Pressed Olive Oil (1L)",
+    "p_desc": "Extra virgin olive oil, perfect for salads and healthy cooking.",
+    "p_price": 1200,
+    "p_img_url": "https://placehold.co/400x300/2ECC71/FFFFFF?text=Olive+Oil",
+    "attribute": {
+      "Dietary Preference": "Vegan",
+      "Cuisine": "Mediterranean",
+      "Organic": "Yes"
+    },
+    "p_quantity": 80
+  },
+  {
+    "p_id": 203,
+    "p_type": "Food",
+    "p_subtype": "Spices",
+    "p_name": "Kashmiri Red Chilli Powder (200g)",
+    "p_desc": "Authentic Kashmiri chilli powder known for its vibrant color and mild heat.",
+    "p_price": 250,
+    "p_img_url": "https://placehold.co/400x300/2ECC71/FFFFFF?text=Chilli+Powder",
+    "attribute": {
+      "Dietary Preference": "Vegetarian",
+      "Cuisine": "Indian",
+      "Organic": "No"
+    },
+    "p_quantity": 200
+  },
+  {
+    "p_id": 204,
+    "p_type": "Food",
+    "p_subtype": "Snacks",
+    "p_name": "Roasted Almonds (500g)",
+    "p_desc": "Lightly salted and roasted California almonds, a perfect healthy snack.",
+    "p_price": 600,
+    "p_img_url": "https://placehold.co/400x300/2ECC71/FFFFFF?text=Almonds",
+    "attribute": {
+      "Dietary Preference": "Vegan",
+      "Cuisine": "Global",
+      "Organic": "No"
+    },
+    "p_quantity": 120
+  },
+  {
+    "p_id": 205,
+    "p_type": "Food",
+    "p_subtype": "Beverages",
+    "p_name": "Darjeeling Green Tea (100 bags)",
+    "p_desc": "Premium green tea bags sourced from the hills of Darjeeling.",
+    "p_price": 450,
+    "p_img_url": "https://placehold.co/400x300/2ECC71/FFFFFF?text=Green+Tea",
+    "attribute": {
+      "Dietary Preference": "Vegan",
+      "Cuisine": "Indian",
+      "Organic": "Yes"
+    },
+    "p_quantity": 100
+  },
+  {
+    "p_id": 206,
+    "p_type": "Food",
+    "p_subtype": "Dairy",
+    "p_name": "Fresh Paneer (500g)",
+    "p_desc": "Soft and creamy Malai Paneer, perfect for all your vegetarian dishes.",
+    "p_price": 180,
+    "p_img_url": "https://placehold.co/400x300/2ECC71/FFFFFF?text=Paneer",
+    "attribute": {
+      "Dietary Preference": "Vegetarian",
+      "Cuisine": "Indian",
+      "Organic": "No"
+    },
+    "p_quantity": 90
+  },
+  {
+    "p_id": 207,
+    "p_type": "Food",
+    "p_subtype": "Spices",
+    "p_name": "Turmeric Powder (200g)",
+    "p_desc": "High-quality Haldi powder with high curcumin content.",
+    "p_price": 80,
+    "p_img_url": "https://placehold.co/400x300/2ECC71/FFFFFF?text=Turmeric",
+    "attribute": {
+      "Dietary Preference": "Vegan",
+      "Cuisine": "Indian",
+      "Organic": "Yes"
+    },
+    "p_quantity": 300
+  },
+  {
+    "p_id": 301,
+    "p_type": "Toys",
+    "p_subtype": "Building Blocks",
+    "p_name": "Creative Builder Set (500 pcs)",
+    "p_desc": "A large set of colorful building blocks to spark creativity and imagination in children.",
+    "p_price": 2500,
+    "p_img_url": "https://placehold.co/400x300/E74C3C/FFFFFF?text=Building+Blocks",
+    "attribute": {
+      "Age Group": "4-8 years",
+      "Material": "Plastic",
+      "Educational": "Yes"
+    },
+    "p_quantity": 50
+  },
+  {
+    "p_id": 302,
+    "p_type": "Toys",
+    "p_subtype": "Remote Control",
+    "p_name": "RC Racing Car",
+    "p_desc": "A high-speed remote control car with rechargeable batteries for endless fun.",
+    "p_price": 3200,
+    "p_img_url": "https://placehold.co/400x300/E74C3C/FFFFFF?text=RC+Car",
+    "attribute": {
+      "Age Group": "8+ years",
+      "Material": "Plastic",
+      "Battery Powered": "Yes"
+    },
+    "p_quantity": 30
+  },
+  {
+    "p_id": 303,
+    "p_type": "Toys",
+    "p_subtype": "Puzzles",
+    "p_name": "World Map Jigsaw (1000 pcs)",
+    "p_desc": "A challenging and educational 1000-piece jigsaw puzzle featuring a world map.",
+    "p_price": 900,
+    "p_img_url": "https://placehold.co/400x300/E74C3C/FFFFFF?text=Jigsaw+Puzzle",
+    "attribute": {
+      "Age Group": "8+ years",
+      "Material": "Cardboard",
+      "Educational": "Yes"
+    },
+    "p_quantity": 60
+  },
+  {
+    "p_id": 304,
+    "p_type": "Toys",
+    "p_subtype": "Board Games",
+    "p_name": "Ludo & Snakes Ladders",
+    "p_desc": "A classic 2-in-1 board game set for family fun nights.",
+    "p_price": 500,
+    "p_img_url": "https://placehold.co/400x300/E74C3C/FFFFFF?text=Board+Game",
+    "attribute": {
+      "Age Group": "4-8 years",
+      "Material": "Cardboard",
+      "Players": "2-4"
+    },
+    "p_quantity": 100
+  },
+  {
+    "p_id": 305,
+    "p_type": "Toys",
+    "p_subtype": "Dolls",
+    "p_name": "Princess Doll",
+    "p_desc": "A beautiful princess doll with a sparkling gown and accessories.",
+    "p_price": 1200,
+    "p_img_url": "https://placehold.co/400x300/E74C3C/FFFFFF?text=Doll",
+    "attribute": {
+      "Age Group": "4-8 years",
+      "Material": "Plastic",
+      "Educational": "No"
+    },
+    "p_quantity": 45
+  },
+  {
+    "p_id": 306,
+    "p_type": "Toys",
+    "p_subtype": "Building Blocks",
+    "p_name": "Wooden Alphabet Blocks",
+    "p_desc": "A set of classic wooden blocks with letters and numbers for early learning.",
+    "p_price": 1500,
+    "p_img_url": "https://placehold.co/400x300/E74C3C/FFFFFF?text=Wooden+Blocks",
+    "attribute": {
+      "Age Group": "2-4 years",
+      "Material": "Wood",
+      "Educational": "Yes"
+    },
+    "p_quantity": 70
+  },
+  {
+    "p_id": 401,
+    "p_type": "Books",
+    "p_subtype": "Fiction",
+    "p_name": "The Midnight Library",
+    "p_desc": "A novel by Matt Haig, exploring the choices that go into a life well lived.",
+    "p_price": 450,
+    "p_img_url": "https://placehold.co/400x300/9B59B6/FFFFFF?text=The+Midnight+Library",
+    "attribute": {
+      "Author": "Matt Haig",
+      "Genre": "Contemporary Fiction",
+      "Format": "Paperback"
+    },
+    "p_quantity": 120
+  },
+  {
+    "p_id": 402,
+    "p_type": "Books",
+    "p_subtype": "Non-Fiction",
+    "p_name": "Sapiens: A Brief History of Humankind",
+    "p_desc": "A groundbreaking book by Yuval Noah Harari that explores the history of our species.",
+    "p_price": 600,
+    "p_img_url": "https://placehold.co/400x300/9B59B6/FFFFFF?text=Sapiens",
+    "attribute": {
+      "Author": "Yuval Noah Harari",
+      "Genre": "History",
+      "Format": "Hardcover"
+    },
+    "p_quantity": 90
+  },
+  {
+    "p_id": 403,
+    "p_type": "Books",
+    "p_subtype": "Sci-Fi",
+    "p_name": "Dune",
+    "p_desc": "The epic science fiction novel by Frank Herbert, a timeless classic.",
+    "p_price": 550,
+    "p_img_url": "https://placehold.co/400x300/9B59B6/FFFFFF?text=Dune",
+    "attribute": {
+      "Author": "Frank Herbert",
+      "Genre": "Science Fiction",
+      "Format": "Paperback"
+    },
+    "p_quantity": 80
+  },
+  {
+    "p_id": 404,
+    "p_type": "Books",
+    "p_subtype": "Mystery",
+    "p_name": "The Silent Patient",
+    "p_desc": "A shocking psychological thriller by Alex Michaelides.",
+    "p_price": 380,
+    "p_img_url": "https://placehold.co/400x300/9B59B6/FFFFFF?text=The+Silent+Patient",
+    "attribute": {
+      "Author": "Alex Michaelides",
+      "Genre": "Thriller",
+      "Format": "Paperback"
+    },
+    "p_quantity": 150
+  },
+  {
+    "p_id": 405,
+    "p_type": "Books",
+    "p_subtype": "Self-Help",
+    "p_name": "Atomic Habits",
+    "p_desc": "An Easy & Proven Way to Build Good Habits & Break Bad Ones by James Clear.",
+    "p_price": 500,
+    "p_img_url": "https://placehold.co/400x300/9B59B6/FFFFFF?text=Atomic+Habits",
+    "attribute": {
+      "Author": "James Clear",
+      "Genre": "Self-Help",
+      "Format": "Hardcover"
+    },
+    "p_quantity": 200
+  },
+  {
+    "p_id": 406,
+    "p_type": "Books",
+    "p_subtype": "Comics",
+    "p_name": "Amar Chitra Katha Collection",
+    "p_desc": "A collection of 10 classic Indian comics from Amar Chitra Katha.",
+    "p_price": 800,
+    "p_img_url": "https://placehold.co/400x300/9B59B6/FFFFFF?text=Comics",
+    "attribute": {
+      "Author": "Various",
+      "Genre": "Mythology",
+      "Format": "Paperback"
+    },
+    "p_quantity": 60
+  },
+  {
+    "p_id": 501,
+    "p_type": "DVD",
+    "p_subtype": "Action",
+    "p_name": "The Dark Knight",
+    "p_desc": "Christopher Nolan's critically acclaimed superhero film. Blu-ray edition with special features.",
+    "p_price": 750,
+    "p_img_url": "https://placehold.co/400x300/F1C40F/FFFFFF?text=The+Dark+Knight",
+    "attribute": {
+      "Director": "Christopher Nolan",
+      "Rating": "UA",
+      "Format": "Blu-ray"
+    },
+    "p_quantity": 60
+  },
+  {
+    "p_id": 502,
+    "p_type": "DVD",
+    "p_subtype": "Comedy",
+    "p_name": "3 Idiots",
+    "p_desc": "A classic Bollywood comedy-drama that will make you laugh and think. Special edition DVD.",
+    "p_price": 500,
+    "p_img_url": "https://placehold.co/400x300/F1C40F/FFFFFF?text=3+Idiots",
+    "attribute": {
+      "Director": "Rajkumar Hirani",
+      "Rating": "U",
+      "Format": "DVD"
+    },
+    "p_quantity": 200
+  },
+  {
+    "p_id": 503,
+    "p_type": "DVD",
+    "p_subtype": "Sci-Fi",
+    "p_name": "Interstellar",
+    "p_desc": "A mind-bending science fiction epic from director Christopher Nolan. 4K Ultra HD.",
+    "p_price": 950,
+    "p_img_url": "https://placehold.co/400x300/F1C40F/FFFFFF?text=Interstellar",
+    "attribute": {
+      "Director": "Christopher Nolan",
+      "Rating": "UA",
+      "Format": "Blu-ray"
+    },
+    "p_quantity": 50
+  },
+  {
+    "p_id": 504,
+    "p_type": "DVD",
+    "p_subtype": "Drama",
+    "p_name": "Forrest Gump",
+    "p_desc": "The timeless classic starring Tom Hanks. Collector's Edition DVD.",
+    "p_price": 600,
+    "p_img_url": "https://placehold.co/400x300/F1C40F/FFFFFF?text=Forrest+Gump",
+    "attribute": {
+      "Director": "Robert Zemeckis",
+      "Rating": "U",
+      "Format": "DVD"
+    },
+    "p_quantity": 80
+  },
+  {
+    "p_id": 505,
+    "p_type": "DVD",
+    "p_subtype": "Thriller",
+    "p_name": "Parasite",
+    "p_desc": "Bong Joon Ho's Academy Award-winning masterpiece. Blu-ray edition.",
+    "p_price": 850,
+    "p_img_url": "https://placehold.co/400x300/F1C40F/FFFFFF?text=Parasite",
+    "attribute": {
+      "Director": "Bong Joon Ho",
+      "Rating": "A",
+      "Format": "Blu-ray"
+    },
+    "p_quantity": 40
+  },
+  {
+    "p_id": 601,
+    "p_type": "Laptops",
+    "p_subtype": "Apple",
+    "p_name": "MacBook Air M2",
+    "p_desc": "The latest MacBook Air with the powerful M2 chip, 8GB RAM, and 256GB SSD.",
+    "p_price": 95000,
+    "p_img_url": "https://placehold.co/400x300/BDC3C7/FFFFFF?text=MacBook+Air",
+    "attribute": {
+      "RAM": "8GB",
+      "Storage": "256GB SSD",
+      "Processor": "Apple M2",
+      "Screen Size": "13.6 inch"
+    },
+    "p_quantity": 20
+  },
+  {
+    "p_id": 602,
+    "p_type": "Laptops",
+    "p_subtype": "Dell",
+    "p_name": "XPS 15",
+    "p_desc": "A premium Windows laptop with a stunning 4K display, 16GB RAM, and 512GB SSD.",
+    "p_price": 145000,
+    "p_img_url": "https://placehold.co/400x300/BDC3C7/FFFFFF?text=Dell+XPS+15",
+    "attribute": {
+      "RAM": "16GB",
+      "Storage": "512GB SSD",
+      "Processor": "Intel Core i7",
+      "Screen Size": "15.6 inch"
+    },
+    "p_quantity": 18
+  },
+  {
+    "p_id": 603,
+    "p_type": "Laptops",
+    "p_subtype": "HP",
+    "p_name": "Spectre x360",
+    "p_desc": "A versatile 2-in-1 convertible laptop with a sleek design and powerful performance.",
+    "p_price": 115000,
+    "p_img_url": "https://placehold.co/400x300/BDC3C7/FFFFFF?text=HP+Spectre",
+    "attribute": {
+      "RAM": "16GB",
+      "Storage": "512GB SSD",
+      "Processor": "Intel Core i7",
+      "Screen Size": "14 inch"
+    },
+    "p_quantity": 22
+  },
+  {
+    "p_id": 604,
+    "p_type": "Laptops",
+    "p_subtype": "Lenovo",
+    "p_name": "ThinkPad X1 Carbon",
+    "p_desc": "An ultralight and durable business laptop known for its legendary keyboard.",
+    "p_price": 130000,
+    "p_img_url": "https://placehold.co/400x300/BDC3C7/FFFFFF?text=ThinkPad",
+    "attribute": {
+      "RAM": "16GB",
+      "Storage": "1TB SSD",
+      "Processor": "Intel Core i7",
+      "Screen Size": "14 inch"
+    },
+    "p_quantity": 15
+  },
+  {
+    "p_id": 605,
+    "p_type": "Laptops",
+    "p_subtype": "Asus",
+    "p_name": "ROG Zephyrus G14",
+    "p_desc": "A powerful and compact gaming laptop with an AMD Ryzen 9 processor.",
+    "p_price": 160000,
+    "p_img_url": "https://placehold.co/400x300/BDC3C7/FFFFFF?text=Asus+ROG",
+    "attribute": {
+      "RAM": "32GB",
+      "Storage": "1TB SSD",
+      "Processor": "AMD Ryzen 9",
+      "Screen Size": "14 inch"
+    },
+    "p_quantity": 10
+  },
+  {
+    "p_id": 606,
+    "p_type": "Laptops",
+    "p_subtype": "Apple",
+    "p_name": "MacBook Pro 16\"",
+    "p_desc": "The ultimate professional laptop with the M2 Pro chip, 16GB RAM, and 1TB SSD.",
+    "p_price": 240000,
+    "p_img_url": "https://placehold.co/400x300/BDC3C7/FFFFFF?text=MacBook+Pro",
+    "attribute": {
+      "RAM": "16GB",
+      "Storage": "1TB SSD",
+      "Processor": "Apple M2 Pro",
+      "Screen Size": "16 inch"
+    },
+    "p_quantity": 14
+  },
+  {
+    "p_id": 607,
+    "p_type": "Laptops",
+    "p_subtype": "Dell",
+    "p_name": "Inspiron 15",
+    "p_desc": "A reliable and affordable laptop for everyday use, with 8GB RAM and 512GB SSD.",
+    "p_price": 58000,
+    "p_img_url": "https://placehold.co/400x300/BDC3C7/FFFFFF?text=Dell+Inspiron",
+    "attribute": {
+      "RAM": "8GB",
+      "Storage": "512GB SSD",
+      "Processor": "Intel Core i5",
+      "Screen Size": "15.6 inch"
+    },
+    "p_quantity": 30
+  }
+]
