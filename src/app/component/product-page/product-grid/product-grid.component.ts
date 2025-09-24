@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Product } from '../../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -11,23 +11,38 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 interface ProductQuantity {
   [p_id: number]: number;
 }
+import { UserService } from '../../../services/user.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-product-grid',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatButtonModule, MatIconModule, MatSnackBarModule],
+  imports: [
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
+    MatIconModule,
+    MatSnackBarModule,
+  ],
   templateUrl: './product-grid.component.html',
-  styleUrl: './product-grid.component.css',
+  styleUrls: ['./product-grid.component.css'],
 })
-export class ProductGridComponent {
+export class ProductGridComponent implements OnInit {
   @Input() products: Product[] = [];
   quantities: ProductQuantity = {};
+  wishlistIds: Set<number> = new Set();
 
   constructor(
     private router: Router,
     private userService: UserService,
     private snackBar: MatSnackBar
   ) {}
+
+  ngOnInit(): void {
+    this.userService.getCurrentUser().subscribe((user) => {
+      this.wishlistIds = new Set(user.wishList.map((p: Product) => p.p_id));
+    });
+  }
 
   trackByProductId(index: number, product: Product): number {
     return product.p_id;
@@ -74,14 +89,39 @@ export class ProductGridComponent {
 
     this.userService.addToCart(product.p_id, quantity).subscribe({
       next: () => {
-        this.snackBar.open(`${quantity} of ${product.p_name} added to cart`, 'Close', {
-          duration: 2000,
-        });
+        this.snackBar.open(
+          `${quantity} of ${product.p_name} added to cart`,
+          'Close',
+          {
+            duration: 2000,
+          }
+        );
       },
       error: (err) => {
         console.error('Error updating cart:', err);
-        this.snackBar.open('Failed to update cart. Try again.', 'Close', { duration: 2000 });
+        this.snackBar.open('Failed to update cart. Try again.', 'Close', {
+          duration: 2000,
+        });
       },
     });
+  }
+
+  addToWishlist(product: Product): void {
+    this.userService.addToWishlist(product.p_id).subscribe(
+      () => {
+        this.wishlistIds.add(product.p_id);
+        this.snackBar.open(`${product.p_name} added to wishlist ❤️`, 'Close', {
+          duration: 2000,
+        });
+      },
+      (error: any) => {
+        console.error('Error adding to wishlist:', error);
+        this.snackBar.open(
+          'Failed to add to wishlist. Please try again.',
+          'Close',
+          { duration: 2000 }
+        );
+      }
+    );
   }
 }
