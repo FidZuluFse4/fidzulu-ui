@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, switchMap, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 // Simple cookie helpers
 function setCookie(name: string, value: string, days: number) {
@@ -29,7 +30,6 @@ function getCookie(name: string): string | null {
 function eraseCookie(name: string) {
   document.cookie = name + '=; Max-Age=-99999999; path=/';
 }
-import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
