@@ -6,6 +6,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
+import { AddressService } from '../../services/address/address.service';
+import { Order } from '../../models/order.model';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
@@ -31,11 +33,13 @@ export class WishListComponent implements OnInit {
 
   // quantities map: product id -> quantity
   quantities: { [p_id: string]: number } = {};
+  currencySymbol: string = '$';
 
   constructor(
     private userService: UserService,
     private router: Router,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private addressService: AddressService
   ) {}
 
   goToProductDetails(productId: string) {
@@ -43,8 +47,21 @@ export class WishListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.userService.getCurrentUser().subscribe((user) => {
-      this.wishlist = user.wishList;
+    // Seed state
+    this.userService.getCurrentUser().subscribe();
+    this.userService.wishlist$.subscribe((list) => {
+      this.wishlist = list;
+    });
+    // Reflect cart quantities so wishlist shows live cart state
+    this.userService.cart$.subscribe((orders: Order[]) => {
+      this.quantities = orders.reduce((acc: any, o) => {
+        acc[o.p_id] = o.quantity;
+        return acc;
+      }, {} as { [p_id: string]: number });
+    });
+    // Currency symbol via address
+    this.addressService.getSelectedAddress().subscribe((addr) => {
+      this.currencySymbol = this.locationToSymbol(addr?.location);
     });
   }
 
@@ -110,5 +127,20 @@ export class WishListComponent implements OnInit {
 
   gotoLanding() {
     this.router.navigate(['/landing']);
+  }
+
+  private locationToSymbol(location?: string): string {
+    if (!location) return '$';
+    const l = location.toLowerCase();
+    if (l.includes('india') || l === 'in') return '₹';
+    if (l.includes('ireland') || l === 'ir') return '€';
+    if (
+      l.includes('usa') ||
+      l.includes('united') ||
+      l.includes('america') ||
+      l === 'us'
+    )
+      return '$';
+    return '$';
   }
 }

@@ -46,6 +46,23 @@
     flex-shrink: 0;
   }
 
+  .clickable {
+    cursor: pointer;
+    transition: transform 0.15s ease;
+  }
+  .clickable:hover {
+    transform: scale(1.03);
+  }
+
+  .product-link {
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .product-link:hover {
+    color: #3f51b5;
+  }
+
   .cart-layout {
     display: flex;
     flex-direction: row;

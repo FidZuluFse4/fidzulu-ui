@@ -7,9 +7,12 @@
     <mat-icon class="location-icon">location_on</mat-icon>
     <div class="location-text">
       <span class="location-line1">Deliver to</span>
-      <span class="location-line2">{{
-        (selectedAddress && selectedAddress.location) || "Choose address"
-      }}</span>
+      <span class="location-line2">
+        {{ (selectedAddress && selectedAddress.location) || "Choose address" }}
+        <ng-container *ngIf="selectedAddress"
+          >({{ currencySymbol }})</ng-container
+        >
+      </span>
     </div>
     <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
   </button>
@@ -41,8 +44,9 @@
     >
       <mat-icon>search</mat-icon>
     </button>
-    <div class="nav-action-item" (click)="goToCart()">
+    <div class="nav-action-item cart-with-badge" (click)="goToCart()">
       <mat-icon>shopping_cart</mat-icon>
+      <span class="cart-badge" *ngIf="cartDisplay">{{ cartDisplay }}</span>
       <span class="nav-action-text">Cart</span>
     </div>
     <div class="nav-action-item" (click)="goToWishlist()">
