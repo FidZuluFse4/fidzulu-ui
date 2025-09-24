@@ -16,6 +16,8 @@ export class AboutUsComponent implements OnInit {
   constructor(private teamService: TeamService) {}
 
   ngOnInit(): void {
+    // scroll on top
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
     this.teams = this.teamService.getTeams();
   }
 
