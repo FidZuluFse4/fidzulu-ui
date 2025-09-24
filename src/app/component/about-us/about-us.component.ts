@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Team } from '../../models/team.model';
+import { Component, OnInit } from '@angular/core';
+import { Team, TeamMember } from '../../models/team.model';
 import { TeamService } from '../../services/team.service';
 import { CommonModule } from '@angular/common';
 
@@ -8,27 +8,25 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './about-us.component.html',
-  styleUrl: './about-us.component.css'
+  styleUrl: './about-us.component.css',
 })
-export class AboutUsComponent {
-  teams: Team[] = [
-    {
-      team: 'Frontend',
-      members: ['Alice', 'Bob', 'Carol', 'David']
-    },
-    {
-      team: 'Backend',
-      members: ['Eve', 'Frank', 'Grace', 'Hank', 'Ivy']
-    },
-    {
-      team: 'Middle Tier',
-      members: ['Jack', 'Kathy']
-    }
-  ];
+export class AboutUsComponent implements OnInit {
+  teams: Team[] = [];
 
-  getPhoto(member: String, team: String): string {
-    const teamFolder = team.toString().toLowerCase().replace(/\s+/g, '');
-    const memberName = member.toString().toLowerCase();
-    return `assets/team/${teamFolder}/${memberName}.jpg`;
+  constructor(private teamService: TeamService) {}
+
+  ngOnInit(): void {
+    // scroll on top
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+    this.teams = this.teamService.getTeams();
+  }
+
+  getPhoto(member: TeamMember, team: string): string {
+    // Default image if no specific image is available
+    return 'assets/github-profile.png';
+  }
+
+  getGithubUsername(url: string): string {
+    return url.split('/').pop() || '';
   }
 }

@@ -75,3 +75,7 @@
     padding-right: 0; /* Remove extra padding on mobile */
   }
 }
+
+.about-us {
+  cursor: pointer;
+}
