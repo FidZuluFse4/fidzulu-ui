@@ -28,8 +28,16 @@ jobs:
       - name: Build Angular app
         run: npm run build -- --configuration production --base-href /fidzulu-ui/
 
+      - name: Add SPA fallback
+        run: cp dist/fidzulu-ui/index.html dist/fidzulu-ui/404.html
+
+      - name: List build files
+        run: ls -R dist/fidzulu-ui
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./dist/fidzulu-ui
+          # Optional: specify branch explicitly
+          publish_branch: gh-pages
