@@ -2,7 +2,33 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, switchMap, tap } from 'rxjs';
 
-import { of, throwError } from 'rxjs';
+// Simple cookie helpers
+function setCookie(name: string, value: string, days: number) {
+  let expires = '';
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = '; expires=' + date.toUTCString();
+  }
+  document.cookie =
+    name + '=' + encodeURIComponent(value) + expires + '; path=/';
+}
+
+function getCookie(name: string): string | null {
+  const nameEQ = name + '=';
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0)
+      return decodeURIComponent(c.substring(nameEQ.length, c.length));
+  }
+  return null;
+}
+
+function eraseCookie(name: string) {
+  document.cookie = name + '=; Max-Age=-99999999; path=/';
+}
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -12,9 +38,9 @@ export class AuthService {
   /**
    * Returns true if a valid auth token is present in sessionStorage.
    */
+
   isAuthenticated(): boolean {
-    const token = sessionStorage.getItem('auth_token');
-    // Optionally, add more checks (e.g., token expiry) here
+    const token = getCookie('auth_token');
     return !!token;
   }
 
@@ -22,9 +48,9 @@ export class AuthService {
    * Logs out the user by clearing session storage.
    */
   logout(): void {
-    sessionStorage.removeItem('auth_token');
-    sessionStorage.removeItem('user_id');
-    sessionStorage.removeItem('remembered_username');
+    eraseCookie('auth_token');
+    eraseCookie('user_id');
+    eraseCookie('remembered_username');
     // Add any other cleanup if needed
   }
 
@@ -58,12 +84,12 @@ export class AuthService {
       .pipe(
         tap((res) => {
           if (res && res.token) {
-            sessionStorage.setItem('auth_token', res.token);
-            sessionStorage.setItem('user_id', res.user_id);
+            setCookie('auth_token', res.token, remember ? 30 : 1);
+            setCookie('user_id', res.user_id, remember ? 30 : 1);
             if (remember) {
-              sessionStorage.setItem('remembered_username', username);
+              setCookie('remembered_username', username, 30);
             } else {
-              sessionStorage.removeItem('remembered_username');
+              eraseCookie('remembered_username');
             }
           }
         })
@@ -98,8 +124,8 @@ export class AuthService {
 
   getCurrentUser(): { user_id: string | null; auth_token: string | null } {
     return {
-      user_id: sessionStorage.getItem('user_id'),
-      auth_token: sessionStorage.getItem('auth_token'),
+      user_id: getCookie('user_id'),
+      auth_token: getCookie('auth_token'),
     };
   }
 }
