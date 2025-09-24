@@ -9,6 +9,7 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex; /* Added for better content alignment */
   flex-direction: column; /* Stack card content vertically */
+  cursor: pointer; /* Show pointer cursor on hover to indicate clickable */
 }
 
 .product-card:hover {

@@ -4,14 +4,14 @@
   color: black;
 
   .title {
-    color: #5862D6;
+    color: #5862d6;
     margin-bottom: 1rem;
   }
 
   img {
-    width: 100px;       
-    height: 100px;      
-    object-fit: cover;  
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
     border-radius: 8px;
     flex-shrink: 0;
   }
@@ -19,11 +19,11 @@
   .empty-card {
     text-align: center;
     padding: 2rem;
-    border: 1px dashed #5862D6;
+    border: 1px dashed #5862d6;
     border-radius: 8px;
 
     mat-icon {
-      font-size: 48px;
+      font-size: 100;
       margin-bottom: 1rem;
     }
 
@@ -34,53 +34,53 @@
   }
 
   .wishlist-item {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  gap: 1rem;
-  padding: 1rem;
-
-  img {
-    width: 100px;
-    height: 100px;
-    object-fit: cover;
-    border-radius: 8px;
-    flex-shrink: 0;
-  }
-
-  mat-card-content {
-    flex: 1;
-    padding: 0;
-
+    margin-bottom: 1rem;
     display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
 
-    h3 {
-      margin: 0;
-      font-size: 16px;
-      font-weight: 600;
-      color: black;
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 8px;
+      flex-shrink: 0;
     }
 
-    p {
-      margin: 0.3rem 0;
-      font-size: 14px;
-      color: #555;
+    mat-card-content {
+      flex: 1;
+      padding: 0;
+
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+
+      h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+        color: black;
+      }
+
+      p {
+        margin: 0.3rem 0;
+        font-size: 14px;
+        color: #555;
+      }
+    }
+
+    mat-card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-self: center;
+      margin-left: auto;
+
+      button {
+        min-width: 140px;
+      }
     }
   }
-
-  mat-card-actions {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    align-self: center;
-    margin-left: auto;
-
-    button {
-      min-width: 140px;
-    }
-  }
-}
 }
