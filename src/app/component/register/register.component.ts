@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -13,7 +14,7 @@ export class RegisterComponent {
   registerForm: FormGroup;
   formValidated = false;
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.registerForm = this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
@@ -52,6 +53,14 @@ export class RegisterComponent {
       console.log('Form is invalid', this.registerForm.value, this.registerForm.errors);
       return;
     }
+    this.authService.register(this.registerForm.value.firstName, this.registerForm.value.lastName, this.registerForm.value.email, this.registerForm.value.password, this.registerForm.value.address).subscribe({
+      next: (res) => {
+        console.log('User registered', res);
+      },
+      error: (err) => {
+        console.log('User registration failed', err);
+      }
+    });
     console.log('Form is valid', this.registerForm.value);
   }
 }
