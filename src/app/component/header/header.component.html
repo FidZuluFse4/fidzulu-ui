@@ -3,12 +3,15 @@
     <img src="/assets/logo.PNG" alt="FidZulu Logo" />
   </div>
 
-  <button mat-button class="location-container">
+  <button mat-button class="location-container" (click)="openAddressDialog()">
     <mat-icon class="location-icon">location_on</mat-icon>
     <div class="location-text">
       <span class="location-line1">Deliver to</span>
-      <span class="location-line2">India</span>
+      <span class="location-line2">{{
+        (selectedAddress && selectedAddress.location) || "Choose address"
+      }}</span>
     </div>
+    <mat-icon class="dropdown-icon">arrow_drop_down</mat-icon>
   </button>
 
   <div class="search-container desktop-search">

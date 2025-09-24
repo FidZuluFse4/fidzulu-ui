@@ -1,0 +1,196 @@
+<h2 mat-dialog-title class="dialog-title">Manage Delivery Addresses</h2>
+
+<mat-dialog-content class="mobile-friendly-dialog">
+  <!-- Address List -->
+  <div class="address-list" *ngIf="!isAddingNewAddress && !isEditingAddress">
+    <mat-radio-group [formControl]="selectedAddressIndex">
+      <div
+        class="address-item"
+        *ngFor="let address of addresses; let i = index"
+      >
+        <div class="address-header">
+          <div class="address-left" (click)="selectAddress(i)">
+            <mat-radio-button
+              class="address-radio"
+              [value]="i"
+              aria-label="Select address {{ i }}"
+            ></mat-radio-button>
+            <div class="address-details" title="{{ address.full_addr }}">
+              <div class="address-location">
+                <strong>{{ address.location }}</strong>
+              </div>
+              <div class="address-full">{{ address.full_addr }}</div>
+            </div>
+          </div>
+
+          <div class="address-actions">
+            <button
+              mat-icon-button
+              class="edit-btn"
+              (click)="toggleEditAddress(i); $event.stopPropagation()"
+              color="primary"
+              aria-label="Edit address"
+            >
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              class="delete-btn"
+              (click)="deleteAddress(i); $event.stopPropagation()"
+              [disabled]="addresses.length <= 1"
+              aria-label="Delete address"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-radio-group>
+
+    <div class="add-address-button-container">
+      <button
+        mat-stroked-button
+        color="primary"
+        (click)="toggleAddNewAddress()"
+        [disabled]="!canAddNewAddress()"
+        [matTooltip]="
+          !canAddNewAddress() ? 'Maximum one address per country' : ''
+        "
+      >
+        <mat-icon>add</mat-icon> Add New Address
+      </button>
+      <div class="info-text" *ngIf="!canAddNewAddress()">
+        <mat-icon class="info-icon">info</mat-icon>
+        <span
+          >You can have one address per country. Edit existing addresses
+          instead.</span
+        >
+      </div>
+    </div>
+  </div>
+
+  <!-- Add New Address Form -->
+  <div class="address-form" *ngIf="isAddingNewAddress">
+    <h3>Add New Address</h3>
+
+    <!-- Country Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Country</mat-label>
+      <mat-select [(ngModel)]="newAddress.location" required>
+        <mat-option
+          *ngFor="let country of getAvailableCountries()"
+          [value]="country"
+        >
+          {{ country }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Select your country</mat-hint>
+    </mat-form-field>
+
+    <div class="country-limit-note">
+      <strong>Note:</strong> You can have only one address per country. If you
+      add an address for a country that already has one, the existing address
+      will be replaced.
+    </div>
+
+    <!-- Full Address -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full Address (comma-separated)</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="newAddress.full_addr"
+        required
+        rows="3"
+        placeholder="Street, City, State, ZIP, etc. (comma-separated)"
+      ></textarea>
+      <mat-hint>Enter all address details separated by commas</mat-hint>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-button (click)="toggleAddNewAddress()">Cancel</button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="addNewAddress()"
+        [disabled]="!isValidAddress(newAddress)"
+      >
+        Save Address
+      </button>
+    </div>
+  </div>
+
+  <!-- Edit Address Form -->
+  <div class="address-form" *ngIf="isEditingAddress">
+    <h3>Edit Address</h3>
+
+    <!-- Country Selection -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Country</mat-label>
+      <mat-select [(ngModel)]="newAddress.location" required>
+        <mat-option
+          *ngFor="let country of getAvailableCountries()"
+          [value]="country"
+        >
+          {{ country }}
+        </mat-option>
+      </mat-select>
+      <mat-hint>Select your country</mat-hint>
+    </mat-form-field>
+
+    <div class="country-limit-note">
+      <strong>Note:</strong> You can have only one address per country. If you
+      add an address for a country that already has one, the existing address
+      will be replaced.
+    </div>
+
+    <!-- Full Address -->
+    <mat-form-field appearance="outline" class="full-width">
+      <mat-label>Full Address (comma-separated)</mat-label>
+      <textarea
+        matInput
+        [(ngModel)]="newAddress.full_addr"
+        required
+        rows="3"
+        placeholder="Street, City, State, ZIP, etc. (comma-separated)"
+      ></textarea>
+      <mat-hint>Enter all address details separated by commas</mat-hint>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-button (click)="toggleEditAddress(editingAddressIndex!)">
+        Cancel
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        (click)="saveEditedAddress()"
+        [disabled]="!isValidAddress(newAddress)"
+      >
+        Update Address
+      </button>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions
+  align="start"
+  class="mobile-friendly-actions"
+  *ngIf="!isAddingNewAddress && !isEditingAddress"
+>
+  <div class="left-actions">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="onSelectAddress()"
+      class="deliver-button"
+    >
+      <mat-icon>local_shipping</mat-icon>
+      Deliver Here
+    </button>
+  </div>
+  <div class="right-actions">
+    <button mat-button (click)="onCancel()" class="action-button">
+      Cancel
+    </button>
+  </div>
+</mat-dialog-actions>
