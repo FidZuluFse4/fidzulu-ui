@@ -1,4 +1,9 @@
-import { Component, HostListener, OnInit, ViewEncapsulation } from '@angular/core';
+import {
+  Component,
+  HostListener,
+  OnInit,
+  ViewEncapsulation,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -54,11 +59,12 @@ export class ProductDetailsComponent implements OnInit {
     this.route.params
       .pipe(
         switchMap((params) => {
-          const id = +params['id'];
-          if (isNaN(id)) {
+          const rawId = params['id'];
+          if (rawId == null) {
             this.router.navigate(['/products']);
             return of(null);
           }
+          const id = String(rawId);
           return this.productService.getProductById(id);
         }),
         catchError((err) => {
@@ -77,12 +83,13 @@ export class ProductDetailsComponent implements OnInit {
         if (product.attribute && product.attribute['images']) {
           this.images = product.attribute['images']
             .split(',')
-            .map((url, i) => ({
+            .map((url: string, i: number) => ({
               src: url.trim(),
               alt: `${product.p_name} - ${i + 1}`,
             }));
         } else {
-          this.images = [{ src: product.p_img_url, alt: product.p_name }];
+          const imgSrc: string = product.p_img_url ?? '';
+          this.images = [{ src: imgSrc, alt: product.p_name }];
         }
 
         // Check if product is in wishlist
@@ -90,7 +97,9 @@ export class ProductDetailsComponent implements OnInit {
 
         // Check if already in cart
         this.userService.getCurrentUser().subscribe((user) => {
-          const order = user.cart.find((o) => o.p_id === this.product?.p_id);
+          const order = user.cart.find(
+            (o) => String(o.p_id) === String(this.product?.p_id)
+          );
           if (order) {
             this.productQuantity = order.quantity;
           } else {
@@ -104,7 +113,7 @@ export class ProductDetailsComponent implements OnInit {
     if (!this.product) return;
     this.userService.getCurrentUser().subscribe((user) => {
       this.isInWishlistFlag = user.wishList.some(
-        (item: Product) => item.p_id === this.product?.p_id
+        (item: Product) => String(item.p_id) === String(this.product?.p_id)
       );
     });
   }
@@ -159,9 +168,13 @@ export class ProductDetailsComponent implements OnInit {
       // remove from cart and reset
       this.userService.removeFromCart(this.product.p_id).subscribe(() => {
         this.productQuantity = undefined;
-        this.snackBar.open(`${this.product?.p_name} removed from cart`, 'Close', {
-          duration: 2000,
-        });
+        this.snackBar.open(
+          `${this.product?.p_name} removed from cart`,
+          'Close',
+          {
+            duration: 2000,
+          }
+        );
       });
     } else {
       this.updateCart();
@@ -186,16 +199,24 @@ export class ProductDetailsComponent implements OnInit {
     if (!this.isInWishlistFlag) {
       this.userService.addToWishlist(this.product.p_id).subscribe(() => {
         this.isInWishlistFlag = true;
-        this.snackBar.open(`${this.product?.p_name} added to wishlist ❤️`, 'Close', {
-          duration: 2000,
-        });
+        this.snackBar.open(
+          `${this.product?.p_name} added to wishlist ❤️`,
+          'Close',
+          {
+            duration: 2000,
+          }
+        );
       });
     } else {
       this.userService.removeFromWishlist(this.product.p_id).subscribe(() => {
         this.isInWishlistFlag = false;
-        this.snackBar.open(`${this.product?.p_name} removed from wishlist ❌`, 'Close', {
-          duration: 2000,
-        });
+        this.snackBar.open(
+          `${this.product?.p_name} removed from wishlist ❌`,
+          'Close',
+          {
+            duration: 2000,
+          }
+        );
       });
     }
   }

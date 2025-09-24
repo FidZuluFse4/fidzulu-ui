@@ -44,7 +44,7 @@ export class UserService {
 
   // ================= MOCK IMPLEMENTATION =================
   private mockUser: User = {
-    id: 1,
+    id: '1',
     name: 'Rimjhim',
     username: 'rimjhim123',
     password: 'password',
@@ -57,7 +57,7 @@ export class UserService {
     return of(this.mockUser);
   }
 
-  addToWishlist(productId: number): Observable<any> {
+  addToWishlist(productId: string): Observable<any> {
     const mockProduct: Product = {
       p_id: productId,
       p_type: 'type1',
@@ -71,29 +71,29 @@ export class UserService {
       p_quantity: 1,
     };
     // Avoid duplicates in wishlist
-    if (!this.mockUser.wishList.some(p => p.p_id === productId)) {
+    if (!this.mockUser.wishList.some((p) => p.p_id === productId)) {
       this.mockUser.wishList.push(mockProduct);
     }
     return of({ success: true });
   }
 
-  removeFromWishlist(productId: number): Observable<any> {
+  removeFromWishlist(productId: string): Observable<any> {
     this.mockUser.wishList = this.mockUser.wishList.filter(
-      p => p.p_id !== productId
+      (p) => p.p_id !== productId
     );
     return of({ success: true });
   }
 
-  addToCart(productId: number, quantity: number): Observable<any> {
-    const existingOrder = this.mockUser.cart.find(o => o.p_id === productId);
+  addToCart(productId: string, quantity: number): Observable<any> {
+    const existingOrder = this.mockUser.cart.find((o) => o.p_id === productId);
     if (existingOrder) {
       existingOrder.quantity += quantity;
       existingOrder.amount = existingOrder.quantity * 100; // mock price
     } else {
       const mockOrder: Order = {
-        o_id: Date.now(),
+        o_id: Date.now().toLocaleString(),
         p_id: productId,
-        user_id: this.mockUser.id,
+        user_id: this.mockUser.id.toString(),
         quantity,
         amount: 100 * quantity,
       };
@@ -102,8 +102,8 @@ export class UserService {
     return of({ success: true });
   }
 
-  removeFromCart(orderId: number): Observable<any> {
-    this.mockUser.cart = this.mockUser.cart.filter(o => o.o_id !== orderId);
+  removeFromCart(orderId: string): Observable<any> {
+    this.mockUser.cart = this.mockUser.cart.filter((o) => o.o_id !== orderId);
     return of({ success: true });
   }
 

@@ -66,6 +66,10 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
         this.fetchProducts();
       }
     );
+    // subscribe to product service loading state so the spinner reflects real HTTP activity
+    this.productService.isLoading$.subscribe(
+      (loading) => (this.isLoading = loading)
+    );
     this.selectCategory(this.categories[0]);
   }
 
@@ -81,11 +85,12 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   private selectCategory(categoryName: string): void {
-    this.isLoading = true;
     this.activeProducts = [];
     this.currentFilters = null;
     this.currentPage = 0;
     this.activeCategory = categoryName;
+    // inform product service of active category so it can choose proper endpoint
+    this.productService.setActiveCategory(categoryName);
 
     this.productService
       .getFiltersForCategory(this.activeCategory)
@@ -108,7 +113,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
   }
 
   private fetchProducts(): void {
-    this.isLoading = true;
     this.productService
       .getPaginatedAndFilteredProducts(
         this.activeCategory,
@@ -120,7 +124,6 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
       .subscribe((pagedData) => {
         this.activeProducts = pagedData.products;
         this.totalProducts = pagedData.totalCount;
-        this.isLoading = false;
       });
   }
 }

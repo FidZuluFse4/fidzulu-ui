@@ -1,12 +1,15 @@
 export interface Product {
-  p_id: number;
+  // backend may return string ids like 'B3002' or numbers; accept both
+  p_id: string;
   p_type: string;
-  p_subtype: string;
+  // backend sometimes uses p_sub_type (with underscore) — normalized to p_subtype
+  p_subtype?: string;
   p_name: string;
-  p_desc: string;
-  p_currency: string;
+  p_desc?: string;
+  p_currency?: string;
   p_price: number;
-  p_img_url: string;
-  attribute: Record<string, string>;
-  p_quantity: number;
+  // normalized to single string (first image)
+  p_img_url?: string;
+  attribute?: Record<string, any>;
+  p_quantity?: number;
 }

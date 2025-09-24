@@ -11,30 +11,36 @@
     <!-- The Price Range section -->
     <section class="filter-section">
       <h4>Price Range</h4>
-      <mat-slider [min]="minPrice" [max]="maxPrice">
+      <mat-slider [min]="minPrice" [max]="maxPrice" class="mat-slider">
         <input matSliderThumb formControlName="price" />
       </mat-slider>
       <div class="price-labels">
-        <span>₹{{ minPrice.toLocaleString("en-IN") }}</span>
-        <span>₹{{ maxPrice.toLocaleString("en-IN") }}</span>
+        <span
+          >{{ currentCurrencySymbol
+          }}{{ minPrice.toLocaleString("en-IN") }}</span
+        >
+        <span
+          >{{ currentCurrencySymbol
+          }}{{ maxPrice.toLocaleString("en-IN") }}</span
+        >
       </div>
     </section>
 
     <!-- The accordion for all other attributes -->
     <mat-accordion multi="false">
-      <mat-expansion-panel *ngFor="let group of attributes | keyvalue">
+      <mat-expansion-panel *ngFor="let group of cleanedGroups">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            {{ group.key }}
+            {{ group.display }}
           </mat-panel-title>
         </mat-expansion-panel-header>
 
         <div class="checkbox-group">
           <mat-checkbox
-            *ngFor="let option of group.value"
-            [formControlName]="group.key + '_' + option"
+            *ngFor="let option of group.options"
+            [formControlName]="controlName(group.key, option)"
           >
-            {{ option }}
+            {{ formatOptionValue(option) }}
           </mat-checkbox>
         </div>
       </mat-expansion-panel>
