@@ -9,14 +9,12 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: write  # Required for pushing to gh-pages
+      contents: write
 
     steps:
-      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Setup Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -24,30 +22,24 @@ jobs:
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4. Build Angular app for production with correct base-href
       - name: Build Angular app
         run: npm run build -- --configuration production --base-href /fidzulu-ui/
 
-      # 5. Debug: List dist folder to confirm output
-      - name: List dist folder
-        run: ls -R dist/fidzulu-ui
+      - name: List build folder
+        run: ls -R dist/fidzulu-ui/browser
 
-      # 6. SPA fallback for Angular routing
       - name: Add SPA fallback
-        run: cp dist/fidzulu-ui/index.html dist/fidzulu-ui/404.html
+        run: cp dist/fidzulu-ui/browser/index.html dist/fidzulu-ui/browser/404.html
 
-      # 7. Add .nojekyll to prevent Pages from ignoring assets
       - name: Add .nojekyll
-        run: touch dist/fidzulu-ui/.nojekyll
+        run: touch dist/fidzulu-ui/browser/.nojekyll
 
-      # 8. Deploy to GitHub Pages (gh-pages branch)
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/fidzulu-ui
+          publish_dir: ./dist/fidzulu-ui/browser
           publish_branch: gh-pages
