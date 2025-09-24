@@ -1,11 +1,14 @@
 import { Component, HostListener, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Product } from '../../models/product.model';
+import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { HttpClientModule } from '@angular/common/http';
+
 import { ProductService } from '../../services/product.service';
 import { UserService } from '../../services/user.service';
+import { Product } from '../../models/product.model';
 import { Order } from '../../models/order.model';
-import { MatIcon } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 
 interface ProductImage {
   src: string;
@@ -15,7 +18,13 @@ interface ProductImage {
 @Component({
   selector: 'app-product-page',
   standalone: true,
-  imports: [CommonModule, MatIcon, MatSnackBarModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    MatIconModule,
+    MatSnackBarModule,
+    HttpClientModule // <-- Required for HttpClient in ProductService
+  ],
   templateUrl: './product-page.component.html',
   styleUrls: ['./product-page.component.css'],
   encapsulation: ViewEncapsulation.None
@@ -26,7 +35,7 @@ export class ProductPageComponent implements OnInit {
   selectedIndex = 0;
 
   constructor(
-    private productService: ProductService, 
+    private productService: ProductService,
     private userService: UserService,
     private snackBar: MatSnackBar
   ) {}
@@ -34,11 +43,11 @@ export class ProductPageComponent implements OnInit {
   ngOnInit(): void {
     this.productService.getProductById(1).subscribe(p => {
       this.product = p;
-      if (p.attribute && p.attribute['images']) {
+      if (p?.attribute && p.attribute['images']) {
         this.images = p.attribute['images']
           .split(',')
           .map((url, i) => ({ src: url.trim(), alt: `${p.p_name} - ${i + 1}` }));
-      } else {
+      } else if (p) {
         this.images = [{ src: p.p_img_url, alt: p.p_name }];
       }
     });
