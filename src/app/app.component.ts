@@ -5,6 +5,8 @@ import { HeaderComponent } from './component/header/header.component';
 import { LoginComponent } from './component/login/login.component';
 import { WishListComponent } from './component/wish-list/wish-list.component';
 import { CartComponent } from './component/cart/cart.component';
+import { ProductPageComponent } from './component/product-page/product-page.component';
+import { AboutUsComponent } from './component/about-us/about-us.component';
 
 @Component({
   selector: 'app-root',
@@ -16,6 +18,9 @@ import { CartComponent } from './component/cart/cart.component';
     LoginComponent,
     WishListComponent,
     CartComponent,
+    ,
+    ProductPageComponent,
+    AboutUsComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',

@@ -1,16 +1,20 @@
 import { Injectable } from '@angular/core';
+import { User } from '../models/user.model';
+import { Order } from '../models/order.model';
+import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
 import { HttpClient } from '@angular/common/http';
 import { Order } from '../models/order.model';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class UserService {
   private baseUrl = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {}
 
   getCurrentUser(): Observable<User> {
     return this.http.get<User>(`${this.baseUrl}/users/1`);
@@ -33,12 +37,10 @@ export class UserService {
   }
 
   updateCart(cart: Order[]): Observable<any> {
-  return this.http.patch(`${this.baseUrl}/users/1`, { cart });
+    return this.http.patch(`${this.baseUrl}/users/1`, { cart });
   }
 
   checkoutCart(): Observable<any> {
     return this.http.post(`${this.baseUrl}/checkout`, {});
   }
-
 }
-
