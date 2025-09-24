@@ -6,7 +6,7 @@ export const environment = {
   lambda_essentials:
     'https://2qd2ztcplupypes5da26zkhio40fpdtj.lambda-url.ap-southeast-2.on.aws/essentials',
   lambda_mediatronics:
-    'https://i6fx6alakq7dbvaudb46m6anwe0fuqdd.lambda-url.ap-southeast-2.on.aws/mediatronics',
+    'https://i6fx6alakq7dbvaudb46m6anwe0fuqdd.lambda-url.ap-southeast-2.on.aws/api/mediatronics',
 
   bikeUrl:
     'https://2qd2ztcplupypes5da26zkhio40fpdtj.lambda-url.ap-southeast-2.on.aws/essentials/bikes',

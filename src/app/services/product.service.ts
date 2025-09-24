@@ -58,8 +58,8 @@ export class ProductService {
     Food: { group: 'essentials', path: 'food' },
     Toys: { group: 'essentials', path: 'toys' },
     Books: { group: 'mediatronics', path: 'books' },
-    DVD: { group: 'mediatronics', path: 'dvds' },
-    Laptops: { group: 'mediatronics', path: 'laptops' },
+    DVD: { group: 'mediatronics', path: 'dvds/all' },
+    Laptops: { group: 'mediatronics', path: 'laptops/all' },
   };
   // Separator used by filter sidebar to build control names
   private readonly FILTER_CONTROL_SEP = '___SEP___';
@@ -260,13 +260,34 @@ export class ProductService {
       map((products: Product[]) => {
         let filteredProducts: Product[] = products.slice();
 
+        const singularize = (val: string | undefined | null) => {
+          if (!val) return '';
+          const lower = val.toLowerCase();
+          // basic plural removal: bikes -> bike, toys -> toy, laptops -> laptop
+          if (lower.endsWith('ies')) return lower.slice(0, -3) + 'y';
+          if (lower.endsWith('s')) return lower.slice(0, -1);
+          return lower;
+        };
+
+        const matchesCategory = (p: Product, cat: string) => {
+          const catSing = singularize(cat);
+          const typeSing = singularize(p.p_type);
+          const subSing = singularize(p.p_subtype);
+          return (
+            p.p_type === cat ||
+            p.p_subtype === cat ||
+            typeSing === catSing ||
+            subSing === catSing
+          );
+        };
+
         // Step 1: Filter by category FIRST (if one is selected)
         // Match against either the product type OR the subtype because backends
         // sometimes return broader types (e.g. "Essentials") with subtypes
         // like "Bike". Users select categories like "Bike" in the UI.
         if (category) {
-          filteredProducts = filteredProducts.filter(
-            (p) => p.p_type === category || p.p_subtype === category
+          filteredProducts = filteredProducts.filter((p) =>
+            matchesCategory(p, category)
           );
         }
 
@@ -358,10 +379,24 @@ export class ProductService {
     return this.productsSubject.asObservable().pipe(
       filter((p): p is Product[] => p !== null),
       map((products: Product[]) => {
-        // Match category against both p_type and p_subtype to handle backend shapes
-        const categoryProducts = products.filter(
-          (p) => p.p_type === category || p.p_subtype === category
-        );
+        const singularize = (val: string | undefined | null) => {
+          if (!val) return '';
+          const lower = val.toLowerCase();
+          if (lower.endsWith('ies')) return lower.slice(0, -3) + 'y';
+          if (lower.endsWith('s')) return lower.slice(0, -1);
+          return lower;
+        };
+        const catSing = singularize(category);
+        const categoryProducts = products.filter((p) => {
+          const typeSing = singularize(p.p_type);
+          const subSing = singularize(p.p_subtype);
+          return (
+            p.p_type === category ||
+            p.p_subtype === category ||
+            typeSing === catSing ||
+            subSing === catSing
+          );
+        });
         if (categoryProducts.length === 0)
           return { attributes: new Map(), minPrice: 0, maxPrice: 1000 };
         const prices = categoryProducts.map((p) => p.p_price);
