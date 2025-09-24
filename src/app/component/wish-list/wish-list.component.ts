@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-wish-list',
@@ -19,7 +20,7 @@ import { MatIconModule } from '@angular/material/icon';
 export class WishListComponent implements OnInit {
   wishlist: Product[] = [];
 
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private router: Router) {}
 
   ngOnInit() {
     this.userService.getCurrentUser().subscribe(user => {
@@ -38,5 +39,9 @@ export class WishListComponent implements OnInit {
     this.userService.removeFromWishlist(p_id).subscribe(() => {
       this.wishlist = this.wishlist.filter(p => p.p_id !== p_id);
     });
+  }
+
+  gotoLanding() {
+    this.router.navigate(['/landing']);
   }
 }
