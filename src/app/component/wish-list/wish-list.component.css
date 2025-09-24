@@ -8,6 +8,14 @@
     margin-bottom: 1rem;
   }
 
+  img {
+    width: 100px;       
+    height: 100px;      
+    object-fit: cover;  
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
   .empty-card {
     text-align: center;
     padding: 2rem;
@@ -26,26 +34,53 @@
   }
 
   .wishlist-item {
-    margin-bottom: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+
+  img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  mat-card-content {
+    flex: 1;
+    padding: 0;
+
     display: flex;
     flex-direction: column;
+    gap: 0.5rem;
 
-    mat-card-content {
-      padding: 1rem 0;
-
-      h3 {
-        margin: 0;
-        color: black;
-      }
-
-      p {
-        margin: 0.3rem 0;
-      }
+    h3 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: black;
     }
 
-    mat-card-actions {
-      display: flex;
-      gap: 1rem;
+    p {
+      margin: 0.3rem 0;
+      font-size: 14px;
+      color: #555;
     }
   }
+
+  mat-card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-self: center;
+    margin-left: auto;
+
+    button {
+      min-width: 140px;
+    }
+  }
+}
 }

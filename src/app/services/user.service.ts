@@ -21,7 +21,7 @@ export class UserService {
   }
 
   removeFromWishlist(productId: number): Observable<any> {
-    return this.http.delete(`${this.baseUrl}users/wishlist/${productId}`);
+    return this.http.delete(`${this.baseUrl}/wishlist/${productId}`);
   }
 
   addToCart(productId: number, quantity: number): Observable<any> {

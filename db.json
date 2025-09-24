@@ -39,7 +39,7 @@
       "p_name": "Jewelsmars Bow Trend Huggies",
       "p_desc": "Trendy bow-shaped huggie earrings",
       "p_price": 100,
-      "p_img_url": "/assets/huggies.jpg",
+      "p_img_url": "/assets/earrings.jpg",
       "attribute": {
         "color": "gold"
       },
@@ -73,6 +73,10 @@
     },
     {
       "id": "8805",
+      "quantity": 1
+    },
+    {
+      "id": "3f85",
       "quantity": 1
     }
   ],

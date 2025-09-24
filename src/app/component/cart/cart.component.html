@@ -39,9 +39,9 @@
     <div class="order-summary">
       <mat-card class="summary-card">
         <h3>Order Summary</h3>
-        <p>Subtotal: {{ totalAmount }} Points</p>
+        <p>Subtotal: {{ totalAmount }}</p>
         <p>Shipping & handling: Free</p>
-        <p><strong>Total: {{ totalAmount }} Points</strong></p>
+        <p><strong>Total: {{ totalAmount }} </strong></p>
         <div class="summary-actions">
           <button mat-raised-button color="accent" [disabled]="cart.length === 0" (click)="checkout()">Secure Checkout</button>
           <button mat-stroked-button color="primary" routerLink="/products">Continue Shopping</button>
