@@ -59,6 +59,7 @@ export class LoginComponent {
         console.log("You're logged in");
         this.router.navigate(['/landing']);
         console.log("You're logged in - 2");
+        console.log(res);
       },
       error: (err) => {
         this.loginError = 'Login failed. Please check your credentials.';
