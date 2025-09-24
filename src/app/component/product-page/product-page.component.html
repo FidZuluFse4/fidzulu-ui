@@ -1,0 +1,53 @@
+<main class="product-container" *ngIf="product as p">
+  <!-- Gallery -->
+  <div class="gallery">
+    <div class="main-image">
+      <button class="nav prev" (click)="prev()">‹</button>
+      <img [src]="selected.src" [alt]="selected.alt" />
+      <button class="nav next" (click)="next()">›</button>
+
+      <!-- Wishlist heart -->
+      <button class="wishlist-heart" (click)="addToWishlist()">
+        <mat-icon>
+          {{ isInWishlist() ? 'favorite' : 'favorite_border' }}
+        </mat-icon>
+      </button>
+    </div>
+
+    <div class="thumbnails">
+      <button
+        *ngFor="let img of images; let i = index"
+        (click)="select(i)"
+        [class.active]="i === selectedIndex"
+      >
+        <img [src]="img.src" [alt]="img.alt" />
+      </button>
+    </div>
+  </div>
+
+  <!-- Product Details -->
+  <aside class="details">
+    <h1>{{ p.p_name }}</h1>
+    <div class="points">{{ p.p_price }} {{p.p_currency}}</div>
+
+    <!-- Free shipping line -->
+    <div class="free-shipping">🚚✨ Free Shipping</div>
+
+    <!-- Availability line -->
+    <div class="availability">📦 Usually ships within 15 business days</div>
+
+    <div class="purchase-row">
+      <div class="qty">
+        <button (click)="decrease()">−</button>
+        <input readonly [value]="p.p_quantity" />
+        <button (click)="increase()">+</button>
+      </div>
+      <button class="add" (click)="addToCart()">Add to Cart</button>
+    </div>
+
+    <section class="description">
+      <h2>Product description</h2>
+      <p>{{ p.p_desc }}</p>
+    </section>
+  </aside>
+</main>
