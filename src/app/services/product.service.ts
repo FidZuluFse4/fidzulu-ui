@@ -41,7 +41,7 @@ export class ProductService {
   private addressListenerStarted = false;
   // Derived dynamically from environment.bikeUrl (which currently points at essentials/bikes)
   private essentialsRoot: string;
-  private mechatronicsRoot: string;
+  private mediatronicsRoot: string;
 
   // Active category subject (default Bike)
   private activeCategorySubject = new BehaviorSubject<string>('Bike');
@@ -52,14 +52,14 @@ export class ProductService {
   // Category -> group + path segment mapping
   private categoryConfig: Record<
     string,
-    { group: 'essentials' | 'mechatronics'; path: string }
+    { group: 'essentials' | 'mediatronics'; path: string }
   > = {
     Bike: { group: 'essentials', path: 'bikes' },
     Food: { group: 'essentials', path: 'food' },
     Toys: { group: 'essentials', path: 'toys' },
-    Books: { group: 'mechatronics', path: 'books' },
-    DVD: { group: 'mechatronics', path: 'dvds' },
-    Laptops: { group: 'mechatronics', path: 'laptops' },
+    Books: { group: 'mediatronics', path: 'books' },
+    DVD: { group: 'mediatronics', path: 'dvds' },
+    Laptops: { group: 'mediatronics', path: 'laptops' },
   };
   // Separator used by filter sidebar to build control names
   private readonly FILTER_CONTROL_SEP = '___SEP___';
@@ -68,19 +68,9 @@ export class ProductService {
     private http: HttpClient,
     private addressService: AddressService
   ) {
-    // Derive roots from the provided bikeUrl once
-    // bikeUrl example: https://.../essentials/bikes
-    const lastSlash = environment.bikeUrl.lastIndexOf('/');
-    const essentialsBase =
-      lastSlash > -1
-        ? environment.bikeUrl.substring(0, lastSlash)
-        : environment.bikeUrl;
     // essentialsBase now: .../essentials
-    this.essentialsRoot = essentialsBase;
-    this.mechatronicsRoot = essentialsBase.replace(
-      '/essentials',
-      '/mechatronics'
-    );
+    this.essentialsRoot = environment.lambda_essentials;
+    this.mediatronicsRoot = environment.lambda_mediatronics;
   }
 
   // Start listening to selected address changes and fetch products accordingly
@@ -201,7 +191,7 @@ export class ProductService {
   ): { url: string; teamUrl: string } {
     const cfg = this.categoryConfig[category] || this.categoryConfig['Bike'];
     const root =
-      cfg.group === 'essentials' ? this.essentialsRoot : this.mechatronicsRoot;
+      cfg.group === 'essentials' ? this.essentialsRoot : this.mediatronicsRoot;
     const productUrl = `${root}/${cfg.path}/${locationCode}`;
     const teamUrl = `${root}/${cfg.path}/team`;
     return { url: productUrl, teamUrl };
