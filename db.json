@@ -1,0 +1,91 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "name": "Anupama",
+      "username": "anu",
+      "password": "pass",
+      "address": [
+        {
+          "location": "India",
+          "full_addr": "123 Main Street, Delhi"
+        }
+      ],
+      "wishList": [
+        1,
+        2
+      ],
+      "cart": [
+        {
+          "o_id": 1,
+          "p_id": 1,
+          "quantity": 2,
+          "amount": 200
+        },
+        {
+          "o_id": 2,
+          "p_id": 2,
+          "quantity": 2,
+          "amount": 320
+        }
+      ]
+    }
+  ],
+  "products": [
+    {
+      "p_id": 1,
+      "p_type": "Jewelry",
+      "p_subtype": "Earrings",
+      "p_name": "Jewelsmars Bow Trend Huggies",
+      "p_desc": "Trendy bow-shaped huggie earrings",
+      "p_price": 100,
+      "p_img_url": "/assets/earrings.jpg",
+      "attribute": {
+        "color": "gold"
+      },
+      "p_quantity": 10,
+      "id": "29f1"
+    },
+    {
+      "p_id": 2,
+      "p_type": "Bottle",
+      "p_subtype": "Sports",
+      "p_name": "Urban Gear Stainless Steel Sports Bottle",
+      "p_desc": "1000ml BPA-free bottle",
+      "p_price": 160,
+      "p_img_url": "/assets/bottle.jpg",
+      "attribute": {
+        "capacity": "1000ml"
+      },
+      "p_quantity": 5,
+      "id": "9cbe"
+    }
+  ],
+  "wishlist": [],
+  "cart": [
+    {
+      "id": "1abe",
+      "quantity": 1
+    },
+    {
+      "id": "055a",
+      "quantity": 1
+    },
+    {
+      "id": "8805",
+      "quantity": 1
+    },
+    {
+      "id": "3f85",
+      "quantity": 1
+    }
+  ],
+  "checkout": [
+    {
+      "id": "6943"
+    },
+    {
+      "id": "2798"
+    }
+  ]
+}

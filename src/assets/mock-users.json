@@ -1,0 +1,8 @@
+[
+  {
+    "id": 1,
+    "username": "test@example.com",
+    "password": "password123",
+    "token": "mock-token-abc123"
+  }
+]

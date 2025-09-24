@@ -1,0 +1,131 @@
+/* Error message styles */
+.error-message {
+	color: #d32f2f;
+	font-size: 1.08rem;
+	margin-top: 0.3rem;
+	margin-bottom: 0.2rem;
+	text-align: left;
+	font-weight: 500;
+}
+
+.login-error-message {
+	text-align: center;
+	margin-top: 0.7rem;
+	font-size: 1.12rem;
+}
+
+.login-bg {
+	background: #fff;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.login-card {
+		color: #000;
+		background: #fff;
+		padding: 2.4rem 3rem;
+		border-radius: 20px;
+		box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+		min-width: 408px;
+		max-width: 456px;
+		width: 100%;
+		margin-bottom: 1.8rem;
+}
+
+.login-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 1.5rem;
+}
+
+.login-title {
+		font-size: 2.5rem;
+	font-weight: 600;
+	text-align: left;
+}
+
+.login-logo {
+		height: 120px;
+	width: auto;
+	margin-left: 1rem;
+}
+
+.form-group {
+		display: flex;
+		flex-direction: column;
+		margin-bottom: 1.2rem;
+}
+
+.inputs label {
+    font-size: 1.2rem;
+    font-weight: bolder;
+}
+
+.form-control {
+		padding: 0.72rem 0.96rem;
+		border-radius: 7px;
+		border: none;
+		margin-top: 0.75rem;
+		font-size: 1.2rem;
+}
+
+.remember-row {
+		flex-direction: row;
+		align-items: center;
+		gap: 0.6rem;
+		margin-bottom: 1.44rem;
+        font-weight: 2rem;
+        font-weight: normal;
+}
+
+.login-btn {
+		background: #368727;
+		color: #fff;
+		border: none;
+		border-radius: 7px;
+		padding: 0.84rem 0;
+		width: 100%;
+		font-size: 1.32rem;
+		font-weight: 600;
+		cursor: pointer;
+		margin-top: 0.6rem;
+		margin-bottom: 0.6rem;
+		transition: background 0.2s;
+}
+.login-btn:hover {
+	background: #2c6e1f;
+}
+
+.forgot-link {
+	text-align: center;
+	margin-top: 0.7rem;
+}
+.forgot-link a {
+		color: #368727;
+		text-decoration: underline;
+		font-size: 1.18rem;
+}
+
+.signup-section {
+		text-align: center;
+		font-size: 1.2rem;
+		color: #222;
+}
+.signup-section a {
+		color: #368727;
+		text-decoration: underline;
+		font-weight: 500;
+		margin: 0 0.24rem;
+}
+
+input#password.form-control {
+    border: #000 1px solid;
+}
+
+input#username.form-control {
+    border: #000 1px solid;
+}

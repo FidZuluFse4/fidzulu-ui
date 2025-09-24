@@ -4,6 +4,7 @@ export interface Product {
   p_subtype: string;
   p_name: string;
   p_desc: string;
+  p_currency: string, 
   p_price: number;
   p_img_url: string;
   attribute: Record<string, string>;

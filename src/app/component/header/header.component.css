@@ -1,105 +1,166 @@
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 20px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  height: 70px;
+:host {
+  display: block;
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-.logo-container {
-  flex: 0 0 auto;
+/* FIX 1: SWITCHING TO CSS GRID FOR PERFECT LAYOUT CONTROL
+  - display is now 'grid' instead of 'flex'.
+  - grid-template-columns defines the size of each column.
+    'auto' means "as wide as the content".
+    '1fr' means "take up all the leftover free space".
+  - gap is increased to 30px to make everything less cramped.
+*/
+.app-header {
+  height: 80px;
+  background-color: #ffffff;
+  padding: 0 24px;
+
+  display: grid;
+  grid-template-columns: auto auto 1fr auto; /* Logo | Location | Search (fills space) | Actions */
+  align-items: center;
+  gap: 30px; /* Increased space between all items */
 }
 
 .logo-container img {
-  height: 40px;
+  height: 50px;
   object-fit: contain;
+  display: block;
+  cursor: pointer;
 }
 
-.search-container {
-  flex: 1;
-  max-width: 500px;
-  margin: 0 20px;
+/* FIX 2: GIVING THE "DELIVER TO" SECTION MORE PADDING */
+.location-container {
   display: flex;
   align-items: center;
+  cursor: pointer;
+  padding: 6px; /* Added padding for more breathing room */
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+}
+.location-container:hover {
+  background-color: #f0f0f0;
+}
+.location-icon {
+  font-size: 28px;
+  height: 28px;
+  width: 28px;
+  margin-right: 4px;
+}
+.location-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  text-align: left;
+}
+.location-line1 {
+  font-size: 13px;
+  color: #666;
+}
+.location-line2 {
+  font-size: 15px;
+  font-weight: bold;
 }
 
-.search-container mat-form-field {
+/* Search container is now a grid item, so it needs fewer styles */
+.search-container {
+  display: flex;
+  align-items: center;
   width: 100%;
-  margin-bottom: -1.25em; /* Fix extra padding in Material form fields */
+  max-width: 900px;
+  justify-self: center; /* This is the line that centers it */
 }
 
-.search-container button {
-  margin-left: 8px;
-  background-color: #3f51b5;
-  color: white;
+.search-form-field {
+  width: 100%;
+}
+::ng-deep .search-form-field .mat-mdc-form-field-subscript-wrapper {
+  display: none;
 }
 
+/* --- Navigation Actions --- */
 .nav-actions {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 25px;
 }
-
-.nav-actions > div {
+.nav-action-item {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   cursor: pointer;
-  padding: 5px;
-  transition: all 0.2s ease;
+}
+.nav-action-item > mat-icon {
+  font-size: 28px;
+  width: 28px;
+  height: 28px;
 }
 
-.nav-actions > div:hover {
-  color: #3f51b5;
-  transform: translateY(-2px);
-}
-
-.nav-actions mat-icon {
-  font-size: 24px;
-  height: 24px;
-  width: 24px;
-}
-
-.nav-actions span {
+.nav-action-text {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 5px;
+  background-color: #333;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
   font-size: 12px;
-  margin-top: 4px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition: all 0.2s ease-in-out;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .search-container {
-    max-width: 250px;
-  }
+.nav-action-item:hover .nav-action-text {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
 
-  .nav-actions {
-    gap: 10px;
+/* --- Mobile Specific --- */
+.mobile-search-icon {
+  display: none;
+}
+.mobile-search-wrapper {
+  padding: 8px 16px;
+  background-color: #ffffff;
+  border-top: 1px solid #e0e0e0;
+}
+
+@media (max-width: 1024px) {
+  .app-header {
+    /* Switch back to a simpler flex layout on smaller screens */
+    display: flex;
+    justify-content: space-between;
+  }
+  .location-container {
+    display: none;
   }
 }
 
-@media (max-width: 576px) {
-  header {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 10px;
+@media (max-width: 767px) {
+  .app-header {
+    height: 65px;
+    padding: 0 16px;
+    gap: 16px;
   }
-
-  .search-container {
-    order: 3;
-    max-width: 100%;
-    margin: 10px 0 0;
-    width: 100%;
+  .desktop-search {
+    display: none;
   }
-
-  .logo-container {
-    flex: 1;
+  .mobile-search-icon {
+    display: inline-flex;
   }
-
-  .nav-actions {
-    flex: 0 0 auto;
+  .nav-action-text,
+  .nav-action-item:hover .nav-action-text {
+    display: none;
   }
+}
+/* This is the final fix to center the placeholder text in the search bar */
+::ng-deep .search-form-field .mat-mdc-input-element {
+  align-self: center;
 }
