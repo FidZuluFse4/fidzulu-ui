@@ -29,8 +29,8 @@ export class AuthService {
     // Add any other cleanup if needed
   }
 
-  private middlewareUrl_local_login = 'http://localhost:9090/api/auth/login';
-  private middlewareUrl_local_register = 'http://localhost:9090/api/auth/register';
+  private middlewareUrl_local_login = "https://yb2t3volwkwisgyiuj72w3p25y0csyfc.lambda-url.ap-southeast-2.on.aws/api/auth/login";
+  private middlewareUrl_local_register = "https://yb2t3volwkwisgyiuj72w3p25y0csyfc.lambda-url.ap-southeast-2.on.aws/api/auth/register";
 
   constructor(private http: HttpClient) { }
 
@@ -70,8 +70,9 @@ export class AuthService {
     address: string
   ): Observable<any> {
     const body = {name: firstName + " " + lastName, email: username, password: password, addresses: [{location: location, full_address: address}]};
-
-    return this.http.post<{ user_id: string, name: string, email: string }>(this.middlewareUrl_local_register, body);
+    const res = this.http.post<{ user_id: string, name: string, email: string }>(this.middlewareUrl_local_register, body);
+    console.log("Register response: " + res);
+    return res;
   }
 
   getCurrentUser(): { user_id: string | null, auth_token: string | null } {
