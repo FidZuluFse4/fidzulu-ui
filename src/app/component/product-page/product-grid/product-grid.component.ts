@@ -40,6 +40,14 @@ export class ProductGridComponent implements OnInit {
     this.userService.getCurrentUser().subscribe((user) => {
       this.wishlistIds = new Set(user.wishList.map((p: Product) => p.p_id));
     });
+
+    this.userService.cart$.subscribe((cart) => {
+      // derive quantities map from cart
+      this.quantities = cart.reduce((acc: any, o) => {
+        acc[o.p_id] = o.quantity;
+        return acc;
+      }, {} as ProductQuantity);
+    });
   }
 
   trackByProductId(index: number, product: Product): string {
@@ -57,7 +65,6 @@ export class ProductGridComponent implements OnInit {
 
   // Add to cart button clicked
   addToCart(product: Product) {
-    // Initialize quantity to 1
     this.quantities[product.p_id] = 1;
     this.updateCart(product);
   }
@@ -84,24 +91,7 @@ export class ProductGridComponent implements OnInit {
   private updateCart(product: Product) {
     const quantity = this.quantities[product.p_id] || 0;
     if (quantity <= 0) return;
-
-    this.userService.addToCart(product.p_id, quantity).subscribe({
-      next: () => {
-        this.snackBar.open(
-          `${quantity} of ${product.p_name} added to cart`,
-          'Close',
-          {
-            duration: 2000,
-          }
-        );
-      },
-      error: (err) => {
-        console.error('Error updating cart:', err);
-        this.snackBar.open('Failed to update cart. Try again.', 'Close', {
-          duration: 2000,
-        });
-      },
-    });
+    this.userService.addToCart(product.p_id, quantity).subscribe();
   }
 
   addToWishlist(product: Product): void {

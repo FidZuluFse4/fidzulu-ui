@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
 import { Order } from '../models/order.model';
-import { BehaviorSubject, of } from 'rxjs';
+import { BehaviorSubject, of, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { ProductService } from './product.service';
 import { Product } from '../models/product.model';
 
 @Injectable({
@@ -12,7 +12,13 @@ import { Product } from '../models/product.model';
 export class UserService {
   private baseUrl = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) {}
+  private cartSubject = new BehaviorSubject<Order[]>([]);
+  public readonly cart$ = this.cartSubject.asObservable();
+
+  constructor(
+    private http: HttpClient,
+    private productService: ProductService
+  ) {}
 
   // getCurrentUser(): Observable<User> {
   //   return this.http.get<User>(`${this.baseUrl}/users/1`);
@@ -54,6 +60,8 @@ export class UserService {
   };
 
   getCurrentUser(): Observable<User> {
+    // keep cartSubject synced
+    this.cartSubject.next(this.mockUser.cart);
     return of(this.mockUser);
   }
 
@@ -85,35 +93,48 @@ export class UserService {
   }
 
   addToCart(productId: string, quantity: number): Observable<any> {
+    // Determine price from current products if available
+    let price = 100; // fallback
+    const currentProducts = (this.productService as any).productsSubject
+      ?.value as Product[] | null;
+    if (currentProducts) {
+      const found = currentProducts.find((p) => p.p_id === productId);
+      if (found) price = Number(found.p_price) || price;
+    }
+
     const existingOrder = this.mockUser.cart.find((o) => o.p_id === productId);
     if (existingOrder) {
-      existingOrder.quantity += quantity;
-      existingOrder.amount = existingOrder.quantity * 100; // mock price
+      existingOrder.quantity = quantity; // set to passed quantity (grid passes current)
+      existingOrder.amount = existingOrder.quantity * price;
     } else {
       const mockOrder: Order = {
-        o_id: Date.now().toLocaleString(),
+        o_id: Date.now().toString(),
         p_id: productId,
         user_id: this.mockUser.id.toString(),
         quantity,
-        amount: 100 * quantity,
+        amount: price * quantity,
       };
       this.mockUser.cart.push(mockOrder);
     }
+    this.cartSubject.next([...this.mockUser.cart]);
     return of({ success: true });
   }
 
   removeFromCart(orderId: string): Observable<any> {
     this.mockUser.cart = this.mockUser.cart.filter((o) => o.o_id !== orderId);
+    this.cartSubject.next([...this.mockUser.cart]);
     return of({ success: true });
   }
 
   updateCart(cart: Order[]): Observable<any> {
     this.mockUser.cart = [...cart];
+    this.cartSubject.next([...this.mockUser.cart]);
     return of({ success: true });
   }
 
   checkoutCart(): Observable<any> {
     this.mockUser.cart = [];
+    this.cartSubject.next([]);
     return of({ success: true });
   }
 }
