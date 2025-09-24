@@ -12,6 +12,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SearchService } from '../../services/search.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -34,7 +35,7 @@ export class HeaderComponent implements OnInit {
   isSearchVisible = false;
 
   // Inject the new SearchService
-  constructor(private searchService: SearchService) {}
+  constructor(private searchService: SearchService, private router: Router) {}
 
   ngOnInit(): void {
     // This is the best practice for real-time search
@@ -59,5 +60,17 @@ export class HeaderComponent implements OnInit {
 
   toggleSearch(): void {
     this.isSearchVisible = !this.isSearchVisible;
+  }
+  logOut() {
+    this.router.navigate(['/login']);
+  }
+  goToCart() {
+    this.router.navigate(['/cart']);
+  }
+  goToWishlist() {
+    this.router.navigate(['/wishlist']);
+  }
+  goToHome() {
+    this.router.navigate(['/landing']);
   }
 }

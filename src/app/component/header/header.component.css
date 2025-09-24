@@ -28,6 +28,7 @@
   height: 50px;
   object-fit: contain;
   display: block;
+  cursor: pointer;
 }
 
 /* FIX 2: GIVING THE "DELIVER TO" SECTION MORE PADDING */

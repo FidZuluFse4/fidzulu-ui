@@ -1,5 +1,5 @@
 <mat-toolbar class="app-header">
-  <div class="logo-container">
+  <div class="logo-container" (click)="goToHome()">
     <img src="/assets/logo.PNG" alt="FidZulu Logo" />
   </div>
 
@@ -38,15 +38,15 @@
     >
       <mat-icon>search</mat-icon>
     </button>
-    <div class="nav-action-item">
+    <div class="nav-action-item" (click)="goToCart()">
       <mat-icon>shopping_cart</mat-icon>
       <span class="nav-action-text">Cart</span>
     </div>
-    <div class="nav-action-item">
+    <div class="nav-action-item" (click)="goToWishlist()">
       <mat-icon>favorite_border</mat-icon>
       <span class="nav-action-text">Wishlist</span>
     </div>
-    <div class="nav-action-item">
+    <div class="nav-action-item" (click)="logOut()">
       <mat-icon>logout</mat-icon>
       <span class="nav-action-text">Log Out</span>
     </div>
