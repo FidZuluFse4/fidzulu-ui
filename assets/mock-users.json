@@ -26,6 +26,22 @@
       "password": "MyPass@447",
       "address": "29 Cross Street",
       "token": "mock-token-abc123"
+    },
+    {
+      "id": 2,
+      "name": "Ramnaresh U",
+      "username": "ramnareshnathan@gmail.com",
+      "password": "Password@447",
+      "address": "29 Cross Street",
+      "token": "mock-token-abc123"
+    },
+    {
+      "id": null,
+      "name": "Dhruv C",
+      "username": "testtest@example.com",
+      "password": "passworD123!",
+      "address": "Chennai",
+      "token": "mock-token-abc123"
     }
   ]
 }
