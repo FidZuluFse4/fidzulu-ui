@@ -1,47 +1,45 @@
 name: Angular Build and Deploy
 
-# This workflow runs ONLY on a push to the main branch
 on:
   push:
     branches: [ "main" ]
 
 jobs:
   build-and-deploy:
-    name: Build and Deploy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [20]
 
-    # These permissions are required to allow the action to push to the gh-pages branch
     permissions:
-      contents: read
-      pages: write
-      id-token: write
+      contents: write
 
     steps:
-      # 1. Checks out your repository's code
-      - name: Checkout the source code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Sets up Node.js
-      - name: Setup Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 20
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
-      # 3. Installs dependencies
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build -- --base-href /fidzulu-ui/
+      - name: Build Angular app
+        run: npm run build -- --configuration production --base-href /fidzulu-ui/
+
+      - name: List build folder
+        run: ls -R dist/fidzulu-ui/browser
+
+      - name: Add SPA fallback
+        run: cp dist/fidzulu-ui/browser/index.html dist/fidzulu-ui/browser/404.html
+
+      - name: Add .nojekyll
+        run: touch dist/fidzulu-ui/browser/.nojekyll
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/fidzulu-ui
-
+          publish_dir: ./dist/fidzulu-ui/browser
+          publish_branch: gh-pages

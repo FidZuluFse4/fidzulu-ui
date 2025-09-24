@@ -1,86 +1,402 @@
 .about-us {
-  padding: 20px;
+  padding: 30px;
   text-align: center;
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 h1 {
-  font-size: 2rem;
-  margin-bottom: 30px;
+  font-size: 2.8rem;
+  margin-bottom: 10px;
   color: #3f51b5;
+  font-weight: 700;
+}
+
+.organization {
+  color: #ff4081;
+  font-size: 1.8rem;
+  margin-bottom: 40px;
+  font-style: italic;
 }
 
 .team-section {
-  margin-bottom: 50px;
+  margin-bottom: 60px;
+  background-color: white;
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
-.team-section h2 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
+.team-header {
+  margin-bottom: 30px;
+}
+
+.team-name {
+  font-size: 2rem;
+  margin-bottom: 5px;
   color: #3f51b5;
   text-transform: uppercase;
+  position: relative;
+  display: inline-block;
+}
+
+.team-nickname {
+  color: #ff4081;
+  font-size: 1.3rem;
+  font-style: italic;
+  margin-top: 5px;
+  margin-bottom: 20px;
+}
+
+.team-name:after {
+  content: "";
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background-color: #ff4081;
+  border-radius: 2px;
+}
+
+.members-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .members {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 25px;
   justify-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  max-width: 1000px;
+  /* Special handling for teams with few members */
+  grid-auto-flow: dense;
+}
+
+/* Special handling for small teams */
+.small-team {
+  /* Override grid template columns for small teams */
+  grid-template-columns: repeat(auto-fit, 200px) !important;
+  margin: 0 auto;
+  /* Make sure the cards are centered */
+  place-content: center;
+}
+
+/* Special handling for teams with exactly 1 member */
+.single-member {
+  grid-template-columns: repeat(1, 280px) !important;
 }
 
 .member-card {
-  width: 140px;
+  width: 180px;
   text-align: center;
-  padding: 10px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  border-radius: 16px;
+  overflow: hidden;
   background-color: #fff;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .member-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+  transform: translateY(-8px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  background-color: #f9f9ff;
 }
 
-.member-card img {
-  width: 100px;
-  height: 100px;
+.github-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 20px 15px;
+}
+
+.profile-image {
+  width: 130px;
+  height: 130px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 10px;
+  border: 4px solid #f1f1f1;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
 }
 
-.member-card p {
-  font-size: 1rem;
-  font-weight: 500;
+.member-card:hover .profile-image {
+  transform: scale(1.05);
+  border-color: #e8eaf6;
+}
+
+.member-info {
+  margin-top: 12px;
+  text-align: center;
+  width: 100%;
+}
+
+.member-name {
+  font-size: 1.1rem;
+  font-weight: 600;
   color: #333;
+  margin: 0 0 8px 0;
+}
+
+.github-username {
+  color: #666;
+  font-size: 0.9rem;
   margin: 0;
+  background-color: #f1f5f9;
+  padding: 3px 8px;
+  border-radius: 15px;
+  display: inline-block;
+  transition: background-color 0.2s ease;
+}
+
+.member-card:hover .github-username {
+  background-color: #e8eaf6;
+  color: #3f51b5;
 }
 
 /* Responsive adjustments */
-@media (max-width: 768px) {
-  .members {
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+@media (max-width: 900px) {
+  .about-us {
+    padding: 25px 15px;
   }
 
-  .member-card img {
-    width: 80px;
-    height: 80px;
+  .team-section {
+    padding: 25px 15px;
+  }
+
+  .members {
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 20px;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-us {
+    padding: 20px 10px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+  }
+
+  .organization {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+  }
+
+  .team-name {
+    font-size: 1.7rem;
+  }
+
+  .team-nickname {
+    font-size: 1.1rem;
+  }
+
+  .members {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 15px;
+    justify-content: center;
+    max-width: 100%;
+  }
+
+  /* Adjust small teams for tablets */
+  .small-team {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) !important;
+  }
+
+  /* Special handling for single member teams on tablets */
+  .single-member {
+    grid-template-columns: repeat(1, 240px) !important;
+  }
+
+  .single-member .member-card {
+    width: 100%;
+    max-width: 220px;
+  }
+
+  .single-member .profile-image {
+    width: 130px;
+    height: 130px;
+  }
+
+  .member-card {
+    width: 160px;
+  }
+
+  .profile-image {
+    width: 110px;
+    height: 110px;
+  }
+
+  .member-name {
+    font-size: 1rem;
   }
 }
 
 @media (max-width: 480px) {
+  .about-us {
+    padding: 15px 8px;
+    max-width: 100%;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .organization {
+    font-size: 1.3rem;
+    margin-bottom: 25px;
+  }
+
+  .team-section {
+    padding: 20px 10px;
+    margin-bottom: 40px;
+    border-radius: 15px;
+  }
+
+  .team-name {
+    font-size: 1.5rem;
+  }
+
+  .team-nickname {
+    font-size: 1rem;
+    margin-bottom: 15px;
+  }
+
   .members {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 15px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
   }
 
-  .member-card img {
-    width: 70px;
-    height: 70px;
+  /* Override for small teams on mobile */
+  .small-team {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
   }
 
-  h1 { font-size: 1.5rem; }
-  .team-section h2 { font-size: 1.3rem; }
+  /* Special handling for single member teams on mobile */
+  .single-member {
+    grid-template-columns: repeat(1, 200px) !important;
+  }
+
+  .single-member .member-card {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .single-member .profile-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  /* Increase card size for small teams with 2-3 members */
+  .small-team .member-card {
+    width: 100%;
+    max-width: 180px;
+  }
+
+  .member-card {
+    width: 100%;
+    max-width: 140px;
+  }
+
+  .github-link {
+    padding: 15px 10px;
+  }
+
+  .profile-image {
+    width: 90px;
+    height: 90px;
+    border-width: 3px;
+  }
+
+  .member-name {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+  }
+
+  .github-username {
+    font-size: 0.8rem;
+    padding: 2px 6px;
+  }
+}
+
+@media (max-width: 360px) {
+  .about-us {
+    padding: 12px 5px;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+
+  .organization {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+  }
+
+  .team-section {
+    padding: 15px 8px;
+    margin-bottom: 30px;
+  }
+
+  .team-name {
+    font-size: 1.4rem;
+  }
+
+  .members {
+    grid-template-columns: repeat(1, 1fr);
+    max-width: 280px;
+  }
+
+  /* Make sure even small teams are stacked in a single column on very small screens */
+  .small-team {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+
+  /* Special handling for single member teams on smallest screens */
+  .single-member {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+
+  .single-member .member-card {
+    width: 100%;
+    max-width: 240px;
+    margin: 0 auto;
+  }
+
+  .single-member .profile-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .member-card {
+    width: 100%;
+    max-width: 220px;
+    margin: 0 auto;
+  }
+
+  .profile-image {
+    width: 100px;
+    height: 100px;
+  }
 }
