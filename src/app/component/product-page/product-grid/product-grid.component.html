@@ -2,10 +2,16 @@
   <mat-card
     class="product-card"
     *ngFor="let product of products; trackBy: trackByProductId"
+    (click)="goToProductDetails(product.p_id)"
   >
     <!-- THIS IS THE NEW CONTAINER FOR THE IMAGE -->
     <div class="card-image-container">
-      <img mat-card-image [src]="product.p_img_url" [alt]="product.p_name" />
+      <img
+        mat-card-image
+        [src]="product.p_img_url"
+        [alt]="product.p_name"
+        [title]="product.p_name"
+      />
     </div>
 
     <mat-card-content>

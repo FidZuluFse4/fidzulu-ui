@@ -1,0 +1,13 @@
+<div class="about-us">
+  <h1>Meet Our Teams</h1>
+
+  <div *ngFor="let t of teams" class="team-section">
+    <h2>{{ t.team.toString() }}</h2>
+    <div class="members">
+      <div *ngFor="let m of t.members" class="member-card">
+        <img [src]="getPhoto(m, t.team)" [alt]="m.toString()" />
+        <p>{{ m.toString() }}</p>
+      </div>
+    </div>
+  </div>
+</div>
