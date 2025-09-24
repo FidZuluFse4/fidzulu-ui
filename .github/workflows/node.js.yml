@@ -39,7 +39,7 @@ jobs:
       # 4. Builds your Angular application for production
       #    FIX: Changed to match your repository name 'fidzulu-ui'
       - name: Build
-        run: npm run build -- --base-href /fidzulu-ui/
+        run: npm run build -- --configuration production --base-href /fidzulu-ui/
 
       # 5. Deploys the built files to the gh-pages branch
       - name: Deploy to GitHub Pages
