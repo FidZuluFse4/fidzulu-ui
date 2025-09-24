@@ -37,8 +37,11 @@ export class ProductGridComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.userService.getCurrentUser().subscribe((user) => {
-      this.wishlistIds = new Set(user.wishList.map((p: Product) => p.p_id));
+    // Seed subjects
+    this.userService.getCurrentUser().subscribe();
+
+    this.userService.wishlist$.subscribe((list) => {
+      this.wishlistIds = new Set(list.map((p: Product) => p.p_id));
     });
 
     this.userService.cart$.subscribe((cart) => {
@@ -95,21 +98,21 @@ export class ProductGridComponent implements OnInit {
   }
 
   addToWishlist(product: Product): void {
-    this.userService.addToWishlist(product.p_id).subscribe(
-      () => {
-        this.wishlistIds.add(product.p_id);
-        this.snackBar.open(`${product.p_name} added to wishlist ❤️`, 'Close', {
-          duration: 2000,
-        });
-      },
-      (error: any) => {
-        console.error('Error adding to wishlist:', error);
+    this.userService.toggleWishlist(product).subscribe({
+      next: (res) => {
+        const action = res.added ? 'added to' : 'removed from';
         this.snackBar.open(
-          'Failed to add to wishlist. Please try again.',
+          `${product.p_name} ${action} wishlist ${res.added ? '❤️' : '❌'}`,
           'Close',
           { duration: 2000 }
         );
-      }
-    );
+      },
+      error: (error) => {
+        console.error('Wishlist toggle failed:', error);
+        this.snackBar.open('Wishlist update failed', 'Close', {
+          duration: 2000,
+        });
+      },
+    });
   }
 }

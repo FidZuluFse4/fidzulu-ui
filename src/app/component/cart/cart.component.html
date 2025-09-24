@@ -16,10 +16,17 @@
       <ng-template #cartBlock>
         <mat-card *ngFor="let item of displayCart" class="cart-item">
           <div class="cart-item-content">
-            <img [src]="getProduct(item.p_id)?.p_img_url" alt="Product Image" />
+            <img
+              [src]="getProduct(item.p_id)?.p_img_url"
+              alt="Product Image"
+              (click)="goToProduct(item.p_id)"
+              class="clickable"
+            />
 
             <div class="details">
-              <h3>{{ getProduct(item.p_id)?.p_name }}</h3>
+              <h3 (click)="goToProduct(item.p_id)" class="product-link">
+                {{ getProduct(item.p_id)?.p_name }}
+              </h3>
               <p class="category" *ngIf="item.category">
                 Category: {{ item.category }}
               </p>

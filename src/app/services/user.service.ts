@@ -14,6 +14,8 @@ export class UserService {
 
   private cartSubject = new BehaviorSubject<Order[]>([]);
   public readonly cart$ = this.cartSubject.asObservable();
+  private wishlistSubject = new BehaviorSubject<Product[]>([]);
+  public readonly wishlist$ = this.wishlistSubject.asObservable();
 
   constructor(
     private http: HttpClient,
@@ -62,34 +64,61 @@ export class UserService {
   getCurrentUser(): Observable<User> {
     // keep cartSubject synced
     this.cartSubject.next(this.mockUser.cart);
+    this.wishlistSubject.next(this.mockUser.wishList);
     return of(this.mockUser);
   }
 
   addToWishlist(productId: string): Observable<any> {
-    const mockProduct: Product = {
-      p_id: productId,
-      p_type: 'type1',
-      p_subtype: 'subtype1',
-      p_name: 'Mock Product',
-      p_desc: 'Description',
-      p_currency: 'USD',
-      p_price: 100,
-      p_img_url: 'mock.png',
-      attribute: {},
-      p_quantity: 1,
-    };
-    // Avoid duplicates in wishlist
-    if (!this.mockUser.wishList.some((p) => p.p_id === productId)) {
-      this.mockUser.wishList.push(mockProduct);
+    // Backward compatibility: try to resolve real product first
+    const currentProducts = (this.productService as any).productsSubject
+      ?.value as Product[] | null;
+    let found: Product | undefined = undefined;
+    if (currentProducts) {
+      found = currentProducts.find((p) => p.p_id === productId);
     }
-    return of({ success: true });
+    if (!found) {
+      // fallback minimal product (should be rare)
+      found = {
+        p_id: productId,
+        p_type: 'generic',
+        p_name: 'Product',
+        p_price: 0,
+        p_currency: '$',
+      } as Product;
+    }
+    if (!this.mockUser.wishList.some((p) => p.p_id === productId)) {
+      this.mockUser.wishList.push(found);
+      this.wishlistSubject.next([...this.mockUser.wishList]);
+    }
+    return of({ success: true, added: true });
   }
 
   removeFromWishlist(productId: string): Observable<any> {
     this.mockUser.wishList = this.mockUser.wishList.filter(
       (p) => p.p_id !== productId
     );
+    this.wishlistSubject.next([...this.mockUser.wishList]);
     return of({ success: true });
+  }
+
+  isInWishlist(productId: string): boolean {
+    return this.mockUser.wishList.some((p) => p.p_id === productId);
+  }
+
+  toggleWishlist(product: Product): Observable<{ added: boolean }> {
+    if (this.isInWishlist(product.p_id)) {
+      this.mockUser.wishList = this.mockUser.wishList.filter(
+        (p) => p.p_id !== product.p_id
+      );
+      this.wishlistSubject.next([...this.mockUser.wishList]);
+      return of({ added: false });
+    } else {
+      // store a shallow copy to avoid accidental mutations
+      const copy: Product = { ...product };
+      this.mockUser.wishList.push(copy);
+      this.wishlistSubject.next([...this.mockUser.wishList]);
+      return of({ added: true });
+    }
   }
 
   addToCart(productId: string, quantity: number): Observable<any> {

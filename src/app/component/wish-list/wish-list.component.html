@@ -30,7 +30,7 @@
             {{ product.p_name }}
           </div>
           <div class="product-price">
-            ₹{{ product.p_price.toLocaleString("en-IN") }}
+            {{ currencySymbol }}{{ product.p_price | number : "1.0-2" }}
           </div>
         </mat-card-content>
         <mat-card-actions>

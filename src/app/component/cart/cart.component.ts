@@ -68,6 +68,10 @@ export class CartComponent implements OnInit {
     return this.products.find((p) => p.p_id === p_id);
   }
 
+  goToProduct(p_id: string) {
+    this.router.navigate(['/product', p_id]);
+  }
+
   calculateTotal() {
     this.totalAmount = this.cart.reduce(
       (sum, item) => sum + (item.amount || 0),
