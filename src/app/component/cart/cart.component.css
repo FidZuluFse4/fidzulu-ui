@@ -113,10 +113,10 @@
       border: 1px dashed #5862D6;
       border-radius: 8px;
 
-      mat-icon {
-        font-size: 48px;
-        margin-bottom: 1rem;
-      }
+     mat-icon {
+      font-size: 100; 
+      color: #5862D6;
+  }
 
       p {
         font-size: 1.2rem;

@@ -8,6 +8,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import {MatDividerModule} from '@angular/material/divider';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -21,7 +22,7 @@ export class CartComponent implements OnInit {
   products: Product[] = [];
   totalAmount = 0;
 
-  constructor(private userService: UserService, private productService: ProductService) {}
+  constructor(private userService: UserService, private productService: ProductService, private router: Router) {}
 
   ngOnInit() {
     this.userService.getCurrentUser().subscribe(user => {
@@ -67,6 +68,10 @@ export class CartComponent implements OnInit {
     this.userService.updateCart(this.cart).subscribe(() => {
       this.calculateTotal();
     });
+  }
+
+  gotoLanding() {
+    this.router.navigate(['/landing']);
   }
 
   checkout() {
