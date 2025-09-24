@@ -1,112 +1,131 @@
-
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, switchMap, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
-import { of, throwError } from 'rxjs';
+// Simple cookie helpers
+function setCookie(name: string, value: string, days: number) {
+  let expires = '';
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = '; expires=' + date.toUTCString();
+  }
+  document.cookie =
+    name + '=' + encodeURIComponent(value) + expires + '; path=/';
+}
+
+function getCookie(name: string): string | null {
+  const nameEQ = name + '=';
+  const ca = document.cookie.split(';');
+  for (let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0)
+      return decodeURIComponent(c.substring(nameEQ.length, c.length));
+  }
+  return null;
+}
+
+function eraseCookie(name: string) {
+  document.cookie = name + '=; Max-Age=-99999999; path=/';
+}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
+  /**
+   * Returns true if a valid auth token is present in sessionStorage.
+   */
 
-  private middlewareUrl = 'http://localhost:3000/users'; // Adjust as needed
-  private mockUrl = 'assets/mock-users.json'; // For json-server, use http://localhost:3000/users
+  isAuthenticated(): boolean {
+    const token = getCookie('auth_token');
+    return !!token;
+  }
 
-  constructor(private http: HttpClient) { }
+  /**
+   * Logs out the user by clearing session storage.
+   */
+  logout(): void {
+    eraseCookie('auth_token');
+    eraseCookie('user_id');
+    eraseCookie('remembered_username');
+    // Add any other cleanup if needed
+  }
+
+  // Use committed environment.ts values (non-secret). For secret/staging hosts,
+  // update this file or use your own mechanism in CI/CD.
+  private middlewareUrl_local_login = environment.lambda_1
+    ? `${environment.lambda_1}/api/auth/login`
+    : '';
+
+  private middlewareUrl_local_register = environment.lambda_1
+    ? `${environment.lambda_1}/api/auth/register`
+    : '';
+
+  constructor(private http: HttpClient) {}
 
   /**
    * Calls Node.js middleware for login, stores token in sessionStorage.
    */
-  login(username: string, password: string, remember: boolean): Observable<any> {
-    return this.http.post<{ token: string }> (
-      this.middlewareUrl + 'users',
-      { username, password }
-    ).pipe(
-      tap(res => {
-        if (res && res.token) {
-          sessionStorage.setItem('auth_token', res.token);
-          if (remember) {
-            sessionStorage.setItem('remembered_username', username);
-          } else {
-            sessionStorage.removeItem('remembered_username');
+  login(
+    username: string,
+    password: string,
+    remember: boolean
+  ): Observable<any> {
+    const body = { email: username, password: password };
+    console.log('Body: ' + body);
+    return this.http
+      .post<{ user_id: string; token: string }>(
+        this.middlewareUrl_local_login,
+        body
+      )
+      .pipe(
+        tap((res) => {
+          if (res && res.token) {
+            setCookie('auth_token', res.token, remember ? 30 : 1);
+            setCookie('user_id', res.user_id, remember ? 30 : 1);
+            if (remember) {
+              setCookie('remembered_username', username, 30);
+            } else {
+              eraseCookie('remembered_username');
+            }
           }
-        }
-      })
-    );
-  }
-
-  /**
-   * Mock login using json-server and mock-users.json
-   */
-  login_mock(username: string, password: string, remember: boolean): Observable<any> {
-    // If using json-server, use http://localhost:3000/users?username=...&password=...
-    // For static file, must fetch all and filter client-side
-    return this.http.get< { users: any[] } >(this.mockUrl).pipe(
-      map(res => 
-        {
-          const users = res.users;
-          console.log(users);
-          return users.find(u => u.username === username && u.password === password);
-        }),
-      tap(user => {
-        if (user && user.token) {
-          sessionStorage.setItem('auth_token', user.token);
-          if (remember) {
-            sessionStorage.setItem('remembered_username', username);
-          } else {
-            sessionStorage.removeItem('remembered_username');
-          }
-        }
-      }),
-      map(user => {
-        if (user && user.token) {
-          return { token: user.token, username: user.username };
-        } else {
-          console.log('Invalid credentials' + user.username);
-          throw new Error('Invalid credentials');
-        }
-      })
-    );
+        })
+      );
   }
 
   /**
    * Register a new user
    */
-
-  // register(firstName: string, lastName: string, username: string, password: string, address: string): Observable<any> {
-  //   const id = this.http.get<any[]>(this.mockUrl).pipe(
-  //     map(users => users.length + 1)
-  //   );
-  //   return this.http.post<any>(
-  //     this.middlewareUrl,
-  //     { "id": id, "name": firstName+lastName, "username": username, "password": password, "address": address }
-  //   );
-  // }
-
   register(
     firstName: string,
     lastName: string,
     username: string,
     password: string,
+    location: string,
     address: string
   ): Observable<any> {
-    return this.http.get<any[]>(this.mockUrl).pipe(
-      map(users => users.length + 1), // compute id as length + 1
-      switchMap(id => {
-        // create the new user object
-        const newUser = {
-          id,
-          name: firstName + " " + lastName,
-          username,
-          password,
-          address,
-          token: "mock-token-abc123"
-        };
-        // POST the new user
-        return this.http.post<any>(this.middlewareUrl, newUser);
-      })
-    );
+    const body = {
+      name: firstName + ' ' + lastName,
+      email: username,
+      password: password,
+      addresses: [{ location: location, full_address: address }],
+    };
+    const res = this.http.post<{
+      user_id: string;
+      name: string;
+      email: string;
+    }>(this.middlewareUrl_local_register, body);
+    console.log('Register response: ' + res);
+    return res;
   }
-  
+
+  getCurrentUser(): { user_id: string | null; auth_token: string | null } {
+    return {
+      user_id: getCookie('user_id'),
+      auth_token: getCookie('auth_token'),
+    };
+  }
 }

@@ -1,9 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormControl } from '@angular/forms'; // <-- Import Reactive Forms
+import { ReactiveFormsModule, FormControl } from '@angular/forms';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
-
-// Your new service
 
 // Angular Material Modules
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -11,31 +9,56 @@ import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { SearchService } from '../../services/search.service';
 import { Router } from '@angular/router';
+import { Address } from '../../models/address.model';
+import { AddressDialogComponent } from '../address-dialog/address-dialog.component';
+import { AddressService } from '../../services/address/address.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
   standalone: true,
   imports: [
     CommonModule,
-    ReactiveFormsModule, // <-- Add ReactiveFormsModule
+    ReactiveFormsModule,
     MatToolbarModule,
     MatInputModule,
     MatFormFieldModule,
     MatIconModule,
     MatButtonModule,
+    MatDialogModule,
   ],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
 export class HeaderComponent implements OnInit {
-  // We use a FormControl instead of ngModel for more power
   searchControl = new FormControl('');
   isSearchVisible = false;
+  isMobile = false;
 
-  // Inject the new SearchService
-  constructor(private searchService: SearchService, private router: Router) {}
+  addresses: Address[] = [];
+  selectedAddress!: Address;
+
+  // Detect screen size changes
+  @HostListener('window:resize', ['$event'])
+  onResize() {
+    this.checkScreenSize();
+  }
+
+  constructor(
+    private searchService: SearchService,
+    private router: Router, private authService: AuthService,
+    private dialog: MatDialog,
+    private addressService: AddressService
+  ) {
+    this.checkScreenSize();
+  }
+
+  checkScreenSize() {
+    this.isMobile = window.innerWidth < 768;
+  }
 
   ngOnInit(): void {
     // This is the best practice for real-time search
@@ -48,6 +71,16 @@ export class HeaderComponent implements OnInit {
         // The term will be null if the input is empty
         this.searchService.updateSearchTerm(term || '');
       });
+
+    // Load addresses from service
+    this.addressService.getAddresses().subscribe((addresses) => {
+      this.addresses = addresses;
+    });
+
+    // Get the selected address
+    this.addressService.getSelectedAddress().subscribe((address) => {
+      this.selectedAddress = address;
+    });
   }
 
   // This function can be removed or kept for the mobile search button
@@ -62,6 +95,7 @@ export class HeaderComponent implements OnInit {
     this.isSearchVisible = !this.isSearchVisible;
   }
   logOut() {
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
   goToCart() {
@@ -72,5 +106,23 @@ export class HeaderComponent implements OnInit {
   }
   goToHome() {
     this.router.navigate(['/landing']);
+  }
+
+  openAddressDialog(): void {
+    const dialogRef = this.dialog.open(AddressDialogComponent, {
+      width: window.innerWidth <= 600 ? '95%' : '500px',
+      maxWidth: '95vw',
+      data: {
+        addresses: this.addresses,
+        selectedAddress: this.selectedAddress,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result) {
+        // Update the selected address in the service
+        this.addressService.setSelectedAddress(result);
+      }
+    });
   }
 }

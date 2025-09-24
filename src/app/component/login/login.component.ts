@@ -35,10 +35,16 @@ export class LoginComponent {
       return;
     }
     const { username, password, remember } = this.loginForm.value;
+    console.log("Username: " + username);
+    console.log("Password: " + password);
+    console.log("Remember: " + remember);
     this.authService.login(username, password, remember).subscribe({
       next: (res) => {
         // Token is now stored in sessionStorage by AuthService
         // You can add navigation or success logic here
+        console.log("You're logged in");
+        console.log(res);
+        this.router.navigate(['/landing']);
       },
       error: (err) => {
         this.loginError = 'Login failed. Please check your credentials.';
@@ -53,7 +59,7 @@ export class LoginComponent {
       return;
     }
     const { username, password, remember } = this.loginForm.value;
-    this.authService.login_mock(username, password, remember).subscribe({
+    this.authService.login(username, password, remember).subscribe({
       next: (res) => {
         // Token is now stored in sessionStorage by AuthService
         console.log("You're logged in");

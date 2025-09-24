@@ -1,0 +1,448 @@
+.dialog-title {
+  padding: 16px;
+  margin: 0;
+  font-size: 20px;
+  font-weight: 500;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f9f9f9;
+}
+
+.mobile-friendly-dialog {
+  padding: 0 20px;
+  overflow-x: hidden; /* Hide horizontal overflow */
+  text-align: left; /* ensure content is left-aligned by default */
+}
+
+.address-list {
+  margin: 16px 0 24px;
+  max-height: 65vh; /* Increased height for better visibility */
+  min-height: 300px; /* Minimum height */
+  overflow-y: auto;
+  scroll-behavior: smooth; /* Smooth scrolling for all browsers */
+  padding: 8px;
+  width: 100%;
+  text-align: left; /* Ensure address content aligns left */
+}
+
+.address-item {
+  margin: 10px 0;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: #fff;
+}
+
+.address-item.selected {
+  border-color: #1976d2;
+  background-color: rgba(25, 118, 210, 0.04);
+}
+
+.mobile-friendly-actions {
+  padding: 24px 16px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.left-actions,
+.right-actions {
+  display: flex;
+}
+
+.deliver-button {
+  min-width: 160px;
+  padding: 12px 24px;
+  font-weight: 500;
+  font-size: 16px;
+  margin-right: 16px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.deliver-button mat-icon {
+  margin-right: 8px;
+}
+
+.action-button {
+  padding: 12px 16px;
+}
+
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 12px !important;
+  min-width: 420px !important; /* allow smaller desktops/laptops */
+  min-height: 420px !important;
+  max-height: 90vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden !important;
+}
+
+/* Scope dialog centering to overlay panes that contain a dialog container.
+   This prevents global overlay rules from interfering with other overlays
+   such as the mat-select panel which must remain positioned next to its trigger. */
+::ng-deep .cdk-overlay-pane .mat-mdc-dialog-container {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important; /* breathing room on small screens */
+  box-sizing: border-box !important;
+}
+
+/* Dialog surface sizing when inside a dialog overlay pane */
+::ng-deep .cdk-overlay-pane .mat-mdc-dialog-container .mdc-dialog__surface {
+  border-radius: 12px !important;
+  min-width: 420px !important;
+  min-height: 420px !important;
+  max-height: 90vh !important;
+  display: flex !important;
+  flex-direction: column !important;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2) !important;
+  overflow: hidden !important;
+}
+
+/* Constrain only dialog overlay panes so other overlay panes (like select panels) behave normally */
+::ng-deep .cdk-overlay-pane .mat-mdc-dialog-container {
+  max-width: 80vw !important;
+  min-width: 320px !important;
+  display: block !important;
+}
+
+/* Dialog content: keep left aligned */
+::ng-deep .mat-mdc-dialog-content {
+  display: block !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+  padding: 16px !important;
+  text-align: left !important;
+}
+
+@media (max-width: 600px) {
+  ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+    min-width: 92vw !important;
+    width: 92vw !important;
+    max-width: 92vw !important;
+  }
+
+  /* allow the surface to be narrower on small screens */
+  ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+    min-width: 320px !important;
+    width: 78vw !important;
+  }
+
+  .mobile-friendly-dialog {
+    padding: 0 16px;
+  }
+}
+
+::ng-deep .mat-mdc-tooltip {
+  font-size: 14px !important;
+  padding: 8px 12px !important;
+  max-width: 250px !important;
+  white-space: normal !important;
+  line-height: 1.4 !important;
+}
+
+.address-item {
+  margin-bottom: 16px;
+  padding: 16px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  transition: all 0.2s ease;
+}
+
+.address-item:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.address-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* vertically center radio/details and icons */
+  width: 100%;
+}
+
+.address-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.address-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  padding: 6px;
+}
+
+/* Ensure icons align vertically and don't cause line breaks */
+::ng-deep .mat-icon {
+  vertical-align: middle;
+}
+
+.address-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-width: 0; /* allow children to shrink and enable ellipsis */
+}
+
+.address-radio {
+  flex: 0 0 auto;
+}
+
+.address-radio ::ng-deep .mdc-radio {
+  z-index: 4;
+}
+
+/* increase tap target for radio on mobile */
+@media (max-width: 600px) {
+  .address-radio {
+    padding: 8px;
+    margin-right: 6px;
+  }
+}
+
+.address-details {
+  margin-left: 0;
+  padding: 8px 0;
+  line-height: 1.4;
+  flex: 1 1 auto;
+  min-width: 0; /* Allows text ellipsis to work properly */
+  display: flex;
+  flex-direction: column;
+}
+
+.address-location {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 16px;
+  color: #000;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.address-full {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  line-height: 1.4;
+  max-width: 100%; /* allow to fill available space inside flex */
+}
+
+.address-phone {
+  color: rgba(0, 0, 0, 0.6);
+  font-size: 13px;
+}
+
+.address-form {
+  padding: 12px 0;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.info-text {
+  margin-top: 16px;
+  padding: 12px;
+  background-color: #fff3cd;
+  border: 1px solid #ffeeba;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  color: #856404;
+}
+
+.info-icon {
+  margin-right: 8px;
+  color: #856404;
+  font-size: 20px;
+}
+
+.country-limit-note {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #e9ecef;
+  border-radius: 4px;
+  font-size: 13px;
+  color: #495057;
+  margin-bottom: 16px;
+}
+
+.address-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.city-field {
+  flex: 2;
+}
+
+.state-field {
+  flex: 1;
+}
+
+.zip-field {
+  flex: 1;
+}
+
+/* Add responsive styles for smaller screens */
+@media (max-width: 600px) {
+  .address-row {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .city-field,
+  .state-field,
+  .zip-field {
+    width: 100%;
+  }
+
+  .address-form {
+    padding: 8px 0 16px;
+  }
+
+  .address-list {
+    max-height: 50vh;
+  }
+
+  /* Mobile: show only location + edit button. Hide full address, radio and delete button */
+  .address-full {
+    display: none;
+  }
+
+  /* show radio on mobile so users can select addresses */
+  .address-radio {
+    display: inline-flex;
+  }
+
+  .delete-btn {
+    display: none;
+  }
+
+  .address-actions {
+    gap: 4px;
+  }
+
+  .address-left {
+    gap: 8px;
+  }
+
+  /* Make dialog actions stack and make "Deliver Here" full width for easier tapping */
+  .mobile-friendly-actions {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch;
+  }
+
+  .mobile-friendly-actions .left-actions,
+  .mobile-friendly-actions .right-actions {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .mobile-friendly-actions .deliver-button {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+.add-address-button-container {
+  margin: 16px 0;
+  text-align: center;
+}
+
+.new-address-section {
+  margin-top: 16px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  padding-top: 16px;
+}
+
+.new-address-form {
+  margin-top: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.no-addresses {
+  text-align: center;
+  padding: 24px 0;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.mobile-friendly-actions {
+  padding-left: 20px;
+  padding-right: 10px;
+  padding-bottom: 20px;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.action-button {
+  min-width: 120px;
+  padding: 8px 16px;
+  font-size: 15px;
+}
+
+/* Style radio buttons better for mobile */
+::ng-deep .mat-mdc-radio-button .mdc-radio {
+  padding: 12px;
+}
+
+::ng-deep .mat-mdc-dialog-container {
+  padding: 16px !important;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  h2 {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .address-details {
+    font-size: 14px;
+  }
+
+  .address-location {
+    font-size: 15px;
+  }
+
+  .address-full {
+    font-size: 13px;
+  }
+
+  .action-button {
+    min-width: 100px;
+  }
+}
+
+h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-size: 16px;
+  font-weight: 500;
+}

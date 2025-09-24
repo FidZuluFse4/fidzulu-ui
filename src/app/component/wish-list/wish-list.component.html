@@ -4,23 +4,85 @@
   <ng-container *ngIf="wishlist.length === 0; else listBlock">
     <mat-card class="empty-card">
       <mat-icon color="primary">favorite_border</mat-icon>
-      <p>Looks like you don’t have any items in your Wish List yet</p>
-      <button mat-raised-button color="primary" (click)="gotoLanding()">Start Browsing</button>
+      <p>Looks like you dont have any items in your Wish List yet</p>
+      <button mat-raised-button color="primary" (click)="gotoLanding()">
+        Start Browsing
+      </button>
     </mat-card>
   </ng-container>
 
   <ng-template #listBlock>
-    <mat-card *ngFor="let product of wishlist" class="wishlist-item">
-      <img mat-card-image [src]="product.p_img_url" alt="{{ product.p_name }}" />
-      <mat-card-content>
-        <h3>{{ product.p_name }}</h3>
-        <p>{{ product.p_desc }}</p>
-        <p><strong>{{ product.p_price }}</strong></p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-stroked-button color="accent" (click)="addToCart(product)">Add to Cart</button>
-        <button mat-stroked-button color="primary" (click)="removeFromWishlist(product.p_id)">Remove</button>
-      </mat-card-actions>
-    </mat-card>
+    <div class="product-grid-container">
+      <mat-card *ngFor="let product of pagedWishlist" class="product-card">
+        <div
+          class="card-image-container"
+          (click)="goToProductDetails(product.p_id)"
+        >
+          <img
+            mat-card-image
+            [src]="product.p_img_url || '/assets/bottle.jpg'"
+            [alt]="product.p_name"
+          />
+        </div>
+        <mat-card-content>
+          <div class="brand-name">{{ product.p_subtype }}</div>
+          <div class="product-name" title="{{ product.p_name }}">
+            {{ product.p_name }}
+          </div>
+          <div class="product-price">
+            ₹{{ product.p_price.toLocaleString("en-IN") }}
+          </div>
+        </mat-card-content>
+        <mat-card-actions>
+          <div class="qty-controls">
+            <ng-container *ngIf="quantities[product.p_id]; else addBtn">
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="decreaseQuantity(product)"
+              >
+                <mat-icon>remove</mat-icon>
+              </button>
+              <div class="qty-display">{{ quantities[product.p_id] }}</div>
+              <button
+                mat-icon-button
+                color="primary"
+                (click)="increaseQuantity(product)"
+              >
+                <mat-icon>add</mat-icon>
+              </button>
+            </ng-container>
+            <ng-template #addBtn>
+              <button
+                mat-flat-button
+                color="primary"
+                class="add-to-cart-btn"
+                (click)="addToCart(product)"
+              >
+                <mat-icon>shopping_cart</mat-icon>
+                Add
+              </button>
+            </ng-template>
+          </div>
+
+          <button
+            mat-stroked-button
+            color="warn"
+            (click)="removeFromWishlist(product.p_id)"
+          >
+            <mat-icon>delete</mat-icon>
+            Remove
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <mat-paginator
+      [length]="wishlist.length"
+      [pageSize]="pageSize"
+      [pageSizeOptions]="[6]"
+      (page)="onPageChange($event)"
+    >
+    </mat-paginator>
   </ng-template>
 </div>

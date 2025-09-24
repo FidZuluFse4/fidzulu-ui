@@ -61,7 +61,56 @@
       "id": "9cbe"
     }
   ],
-  "wishlist": [],
+  "wishlist": [
+    {
+      "id": "139c",
+      "productId": 101
+    },
+    {
+      "id": "b8c2",
+      "productId": 101
+    },
+    {
+      "id": "e540",
+      "productId": 101
+    },
+    {
+      "id": "4051",
+      "productId": 101
+    },
+    {
+      "id": "2645",
+      "productId": 101
+    },
+    {
+      "id": "c90f",
+      "productId": 102
+    },
+    {
+      "id": "aa9e",
+      "productId": 102
+    },
+    {
+      "id": "e2f7",
+      "productId": 101
+    },
+    {
+      "id": "c4fb",
+      "productId": 101
+    },
+    {
+      "id": "06c8",
+      "productId": 101
+    },
+    {
+      "id": "7258",
+      "productId": 101
+    },
+    {
+      "id": "f366",
+      "productId": 101
+    }
+  ],
   "cart": [
     {
       "id": "1abe",
@@ -77,6 +126,18 @@
     },
     {
       "id": "3f85",
+      "quantity": 1
+    },
+    {
+      "id": "7708",
+      "quantity": 1
+    },
+    {
+      "id": "3f32",
+      "quantity": 1
+    },
+    {
+      "id": "32a7",
       "quantity": 1
     }
   ],
