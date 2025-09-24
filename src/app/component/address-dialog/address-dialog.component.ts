@@ -110,6 +110,12 @@ export class AddressDialogComponent {
     this.selectedAddressIndex.setValue(index);
   }
 
+  // Called when mat-radio-group value changes
+  onRadioChange(event: any): void {
+    const index = event.value;
+    this.selectedAddressIndex.setValue(index);
+  }
+
   onCancel(): void {
     this.dialogRef.close(null);
   }

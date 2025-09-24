@@ -3,18 +3,19 @@
 <mat-dialog-content class="mobile-friendly-dialog">
   <!-- Address List -->
   <div class="address-list" *ngIf="!isAddingNewAddress && !isEditingAddress">
-    <mat-radio-group [formControl]="selectedAddressIndex">
+    <div class="addresses-container">
       <div
         class="address-item"
         *ngFor="let address of addresses; let i = index"
+        [class.selected]="selectedAddressIndex.value === i"
       >
         <div class="address-header">
-          <div class="address-left" (click)="selectAddress(i)">
-            <mat-radio-button
-              class="address-radio"
-              [value]="i"
-              aria-label="Select address {{ i }}"
-            ></mat-radio-button>
+          <div
+            class="address-left"
+            (click)="selectAddress(i)"
+            role="button"
+            tabindex="0"
+          >
             <div class="address-details" title="{{ address.full_addr }}">
               <div class="address-location">
                 <strong>{{ address.location }}</strong>
@@ -45,7 +46,7 @@
           </div>
         </div>
       </div>
-    </mat-radio-group>
+    </div>
 
     <div class="add-address-button-container">
       <button
