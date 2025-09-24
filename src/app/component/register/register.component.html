@@ -49,6 +49,13 @@
 				</div>
 			</div>
 			<div class="form-group inputs">
+				<label for="location">Location</label>
+				<input type="text" id="location" class="form-control" formControlName="location" />
+				<div *ngIf="f['location'].touched && f['location'].invalid" class="error-message">
+					Location is required.
+				</div>
+			</div>
+			<div class="form-group inputs">
 				<label for="address">Full Address</label>
 				<textarea id="address" class="form-control address-textarea" formControlName="address" rows="2"></textarea>
 				<div *ngIf="f['address'].touched && f['address'].invalid" class="error-message">
@@ -60,7 +67,7 @@
 							<a href="login">Sign in</a>
 						</div>
 			<div *ngIf="formValidated" class="form-validate-message">
-				<span>Form is being validated. Check console for details.</span>
+				<span>Form is being validated...</span>
 			</div>
 			<button type="submit" class="login-btn">Register</button>
 		</form>

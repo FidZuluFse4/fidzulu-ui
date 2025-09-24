@@ -13,6 +13,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { SearchService } from '../../services/search.service';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -35,7 +36,7 @@ export class HeaderComponent implements OnInit {
   isSearchVisible = false;
 
   // Inject the new SearchService
-  constructor(private searchService: SearchService, private router: Router) {}
+  constructor(private searchService: SearchService, private router: Router, private authService: AuthService) {}
 
   ngOnInit(): void {
     // This is the best practice for real-time search
@@ -62,6 +63,7 @@ export class HeaderComponent implements OnInit {
     this.isSearchVisible = !this.isSearchVisible;
   }
   logOut() {
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
   goToCart() {

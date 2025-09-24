@@ -6,9 +6,10 @@ import { LandingComponent } from './routes/landing/landing.component';
 import { CartComponent } from './routes/cart/cart.component';
 import { AboutRouteComponent } from './routes/about-route/about-route.component';
 import { ProductDetailsRouteComponent } from './routes/product-details-route/product-details-route.component';
+import { authGuard } from './services/auth.guard';
 
 export const routes: Routes = [
-  { path: 'landing', component: LandingComponent },
+  { path: 'landing', component: LandingComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: '', component: LoginComponent },
