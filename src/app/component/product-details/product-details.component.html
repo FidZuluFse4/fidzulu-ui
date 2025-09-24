@@ -20,14 +20,17 @@
     <div class="availability">📦 Usually ships within 5 business days</div>
 
     <div class="purchase-row">
-      <div class="qty">
-        <button (click)="decrease()">−</button>
-        <input readonly [value]="product.p_quantity" />
-        <button (click)="increase()">+</button>
-      </div>
+  <div class="qty" *ngIf="productQuantity !== undefined; else addBtn">
+    <button (click)="decrease()">−</button>
+    <input readonly [value]="productQuantity" />
+    <button (click)="increase()">+</button>
+  </div>
 
-      <button class="add" (click)="addToCart()">Add to Cart</button>
-    </div>
+  <ng-template #addBtn>
+    <button class="add" (click)="addToCart()">Add to Cart</button>
+  </ng-template>
+</div>
+
 
     <section class="description">
       <h2>Product description</h2>

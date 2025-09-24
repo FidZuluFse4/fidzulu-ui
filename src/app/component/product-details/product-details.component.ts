@@ -1,16 +1,11 @@
-import {
-  Component,
-  HostListener,
-  OnInit,
-  ViewEncapsulation,
-} from '@angular/core';
+import { Component, HostListener, OnInit, ViewEncapsulation } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { HttpClientModule } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { switchMap, tap, catchError } from 'rxjs/operators';
+import { switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 import { ProductService } from '../../services/product.service';
@@ -42,7 +37,9 @@ export class ProductDetailsComponent implements OnInit {
   product?: Product;
   images: ProductImage[] = [];
   selectedIndex = 0;
-  productQuantity = 1;
+
+  // quantity state: undefined => not added, 0 => removed, >0 => added
+  productQuantity?: number;
   isInWishlistFlag = false;
 
   constructor(
@@ -54,13 +51,11 @@ export class ProductDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Get product ID from route params
     this.route.params
       .pipe(
         switchMap((params) => {
-          const id = +params['id']; // Convert to number
+          const id = +params['id'];
           if (isNaN(id)) {
-            // If ID is not a valid number, navigate back to products
             this.router.navigate(['/products']);
             return of(null);
           }
@@ -77,8 +72,6 @@ export class ProductDetailsComponent implements OnInit {
         if (!product) return;
 
         this.product = product;
-        // Set initial quantity to 1
-        this.productQuantity = 1;
 
         // Handle product images
         if (product.attribute && product.attribute['images']) {
@@ -94,13 +87,21 @@ export class ProductDetailsComponent implements OnInit {
 
         // Check if product is in wishlist
         this.checkWishlistStatus();
+
+        // Check if already in cart
+        this.userService.getCurrentUser().subscribe((user) => {
+          const order = user.cart.find((o) => o.p_id === this.product?.p_id);
+          if (order) {
+            this.productQuantity = order.quantity;
+          } else {
+            this.productQuantity = undefined;
+          }
+        });
       });
   }
 
-  // Check if the current product is in the user's wishlist
   private checkWishlistStatus(): void {
     if (!this.product) return;
-
     this.userService.getCurrentUser().subscribe((user) => {
       this.isInWishlistFlag = user.wishList.some(
         (item: Product) => item.p_id === this.product?.p_id
@@ -125,14 +126,6 @@ export class ProductDetailsComponent implements OnInit {
     this.selectedIndex = (this.selectedIndex + 1) % this.images.length;
   }
 
-  increase() {
-    this.productQuantity++;
-  }
-
-  decrease() {
-    if (this.productQuantity > 1) this.productQuantity--;
-  }
-
   @HostListener('window:keydown', ['$event'])
   handleKeydown(e: KeyboardEvent) {
     if (e.key === 'ArrowLeft') this.prev();
@@ -142,35 +135,45 @@ export class ProductDetailsComponent implements OnInit {
   addToCart() {
     if (!this.product) return;
 
-    // Create a new order with the current product and quantity
-    const newOrder: Order = {
-      o_id: Date.now(), // Generate a temporary ID
-      p_id: this.product.p_id,
-      user_id: 1,
-      quantity: this.productQuantity,
-      amount: this.productQuantity * this.product.p_price,
-    };
+    this.productQuantity = 1; // initial quantity
+    this.updateCart();
+    this.snackBar.open(
+      `${this.productQuantity} of ${this.product?.p_name} added to cart`,
+      'Close',
+      { duration: 2000 }
+    );
+  }
 
-    // Add to cart using the service
+  increase() {
+    if (!this.product || this.productQuantity === undefined) return;
+
+    this.productQuantity++;
+    this.updateCart();
+  }
+
+  decrease() {
+    if (!this.product || this.productQuantity === undefined) return;
+
+    this.productQuantity--;
+    if (this.productQuantity <= 0) {
+      // remove from cart and reset
+      this.userService.removeFromCart(this.product.p_id).subscribe(() => {
+        this.productQuantity = undefined;
+        this.snackBar.open(`${this.product?.p_name} removed from cart`, 'Close', {
+          duration: 2000,
+        });
+      });
+    } else {
+      this.updateCart();
+    }
+  }
+
+  private updateCart() {
+    if (!this.product || this.productQuantity === undefined) return;
+
     this.userService
       .addToCart(this.product.p_id, this.productQuantity)
-      .subscribe(
-        () => {
-          this.snackBar.open(
-            `${this.productQuantity} of ${this.product?.p_name} added to cart`,
-            'Close',
-            { duration: 2000 }
-          );
-        },
-        (error) => {
-          console.error('Error adding to cart:', error);
-          this.snackBar.open(
-            'Failed to add item to cart. Please try again.',
-            'Close',
-            { duration: 2000 }
-          );
-        }
-      );
+      .subscribe(() => {});
   }
 
   isInWishlist(): boolean {
@@ -181,45 +184,19 @@ export class ProductDetailsComponent implements OnInit {
     if (!this.product) return;
 
     if (!this.isInWishlistFlag) {
-      // Add to wishlist
-      this.userService.addToWishlist(this.product.p_id).subscribe(
-        () => {
-          this.isInWishlistFlag = true;
-          this.snackBar.open(
-            `${this.product?.p_name} added to wishlist ❤️`,
-            'Close',
-            { duration: 2000 }
-          );
-        },
-        (error) => {
-          console.error('Error adding to wishlist:', error);
-          this.snackBar.open(
-            'Failed to add to wishlist. Please try again.',
-            'Close',
-            { duration: 2000 }
-          );
-        }
-      );
+      this.userService.addToWishlist(this.product.p_id).subscribe(() => {
+        this.isInWishlistFlag = true;
+        this.snackBar.open(`${this.product?.p_name} added to wishlist ❤️`, 'Close', {
+          duration: 2000,
+        });
+      });
     } else {
-      // Remove from wishlist
-      this.userService.removeFromWishlist(this.product.p_id).subscribe(
-        () => {
-          this.isInWishlistFlag = false;
-          this.snackBar.open(
-            `${this.product?.p_name} removed from wishlist ❌`,
-            'Close',
-            { duration: 2000 }
-          );
-        },
-        (error) => {
-          console.error('Error removing from wishlist:', error);
-          this.snackBar.open(
-            'Failed to remove from wishlist. Please try again.',
-            'Close',
-            { duration: 2000 }
-          );
-        }
-      );
+      this.userService.removeFromWishlist(this.product.p_id).subscribe(() => {
+        this.isInWishlistFlag = false;
+        this.snackBar.open(`${this.product?.p_name} removed from wishlist ❌`, 'Close', {
+          duration: 2000,
+        });
+      });
     }
   }
 }
