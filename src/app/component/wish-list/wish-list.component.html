@@ -10,17 +10,27 @@
   </ng-container>
 
   <ng-template #listBlock>
-    <mat-card *ngFor="let product of wishlist" class="wishlist-item">
-      <img mat-card-image [src]="product.p_img_url" alt="{{ product.p_name }}" />
-      <mat-card-content>
-        <h3>{{ product.p_name }}</h3>
-        <p>{{ product.p_desc }}</p>
-        <p><strong>{{ product.p_price }}</strong></p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button mat-stroked-button color="accent" (click)="addToCart(product)">Add to Cart</button>
-        <button mat-stroked-button color="primary" (click)="removeFromWishlist(product.p_id)">Remove</button>
-      </mat-card-actions>
-    </mat-card>
+    <div class="product-grid-container">
+      <mat-card *ngFor="let product of wishlist" class="product-card">
+        <div class="card-image-container">
+          <img mat-card-image [src]="product.p_img_url" [alt]="product.p_name" [title]="product.p_name" />
+        </div>
+        <mat-card-content>
+          <div class="brand-name">{{ product.p_subtype }}</div>
+          <div class="product-name">{{ product.p_name }}</div>
+          <div class="product-price">₹{{ product.p_price.toLocaleString('en-IN') }}</div>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-flat-button color="primary" class="add-to-cart-btn" (click)="addToCart(product)">
+            <mat-icon></mat-icon>
+            Add to Cart
+          </button>
+          <button mat-stroked-button color="primary" (click)="removeFromWishlist(product.p_id)">
+            <mat-icon></mat-icon>
+            Remove
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
   </ng-template>
 </div>
