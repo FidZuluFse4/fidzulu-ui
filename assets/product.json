@@ -1,0 +1,26 @@
+[
+  {
+    "p_id": 1,
+    "p_type": "Watch",
+    "p_subtype": "Analog",
+    "p_name": "UNITED COLORS OF BENETTON",
+    "p_desc": "Analog Men Watch",
+    "p_price": 1040,
+    "p_currency": "INR",
+    "p_img_url": "assets/watch-1.jpg",
+    "attribute": {},
+    "p_quantity": 1
+  },
+  {
+    "p_id": 2,
+    "p_type": "Watch",
+    "p_subtype": "Digital",
+    "p_name": "Casio G-Shock",
+    "p_desc": "Digital Men Watch",
+    "p_price": 2500,
+    "p_currency": "INR",
+    "p_img_url": "assets/watch-2.jpg",
+    "attribute": {},
+    "p_quantity": 1
+  }
+]
