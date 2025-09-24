@@ -20,10 +20,5 @@ describe('AppComponent', () => {
     expect(app.title).toEqual('fidzulu-ui');
   });
 
-  it('should render title', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, fidzulu-ui');
-  });
+  // Removed outdated DOM assertion: template no longer renders <h1> with title.
 });

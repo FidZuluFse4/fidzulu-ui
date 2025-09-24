@@ -1,12 +1,20 @@
-
-import { ComponentFixture, TestBed, fakeAsync, tick } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
 import { RegisterComponent } from './register.component';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { of, throwError } from 'rxjs';
 
 class MockAuthService {
-  register = jasmine.createSpy().and.returnValue(of({ user_id: '123', name: 'Test User', email: 'test@example.com' }));
+  register = jasmine
+    .createSpy()
+    .and.returnValue(
+      of({ user_id: '123', name: 'Test User', email: 'test@example.com' })
+    );
 }
 
 class MockRouter {
@@ -24,8 +32,8 @@ describe('RegisterComponent', () => {
       imports: [RegisterComponent],
       providers: [
         { provide: AuthService, useClass: MockAuthService },
-        { provide: Router, useClass: MockRouter }
-      ]
+        { provide: Router, useClass: MockRouter },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegisterComponent);
@@ -58,7 +66,7 @@ describe('RegisterComponent', () => {
       password: '',
       confirmPassword: '',
       location: '',
-      address: ''
+      address: '',
     });
     expect(component.registerForm.invalid).toBeTrue();
   });
@@ -90,7 +98,9 @@ describe('RegisterComponent', () => {
     component.registerForm.controls['confirmPassword'].markAsTouched();
     component.registerForm.updateValueAndValidity();
     fixture.detectChanges();
-    expect(component.registerForm.controls['confirmPassword'].errors?.['mismatch']).toBeTrue();
+    expect(
+      component.registerForm.controls['confirmPassword'].errors?.['mismatch']
+    ).toBeTrue();
   });
 
   it('should call AuthService.register and navigate on valid submit', fakeAsync(() => {
@@ -101,7 +111,7 @@ describe('RegisterComponent', () => {
       password: 'Password1!',
       confirmPassword: 'Password1!',
       location: 'Sydney',
-      address: '123 Main St'
+      address: '123 Main St',
     });
     component.onSubmit();
     tick();
@@ -117,14 +127,16 @@ describe('RegisterComponent', () => {
       password: '',
       confirmPassword: '',
       location: '',
-      address: ''
+      address: '',
     });
     component.onSubmit();
     expect(authService.register).not.toHaveBeenCalled();
   });
 
   it('should handle registration error', fakeAsync(() => {
-    authService.register.and.returnValue(throwError(() => new Error('Registration failed')));
+    authService.register.and.returnValue(
+      throwError(() => new Error('Registration failed'))
+    );
     component.registerForm.setValue({
       firstName: 'Jane',
       lastName: 'Smith',
@@ -132,7 +144,7 @@ describe('RegisterComponent', () => {
       password: 'Password1!',
       confirmPassword: 'Password1!',
       location: 'Melbourne',
-      address: '456 Main St'
+      address: '456 Main St',
     });
     component.onSubmit();
     tick();

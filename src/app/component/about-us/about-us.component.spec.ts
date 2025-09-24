@@ -1,6 +1,13 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { AboutUsComponent } from './about-us.component';
+import { TeamService } from '../../services/team.service';
+import { of } from 'rxjs';
+
+class MockTeamService {
+  getTeams() {
+    return of([]);
+  }
+}
 
 describe('AboutUsComponent', () => {
   let component: AboutUsComponent;
@@ -8,9 +15,9 @@ describe('AboutUsComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AboutUsComponent]
-    })
-    .compileComponents();
+      imports: [AboutUsComponent],
+      providers: [{ provide: TeamService, useClass: MockTeamService }],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(AboutUsComponent);
     component = fixture.componentInstance;
