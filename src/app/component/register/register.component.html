@@ -1,75 +1,151 @@
 <div class="login-bg">
-	<div class="register-card">
-		<div class="login-header">
-			<span class="login-title">Register</span>
-			<img src="assets/logo.PNG" alt="FidZulu Logo" class="login-logo" />
-		</div>
-		<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-			<div class="form-row">
-				<div class="form-group inputs" style="flex:1; margin-right: 0.5rem;">
-					<label for="firstName">First Name</label>
-					<input type="text" id="firstName" class="form-control" formControlName="firstName" />
-					<div *ngIf="f['firstName'].touched && f['firstName'].invalid" class="error-message">
-						First name is required.
-					</div>
-				</div>
-				<div class="form-group inputs" style="flex:1; margin-left: 0.5rem;">
-					<label for="lastName">Last Name</label>
-					<input type="text" id="lastName" class="form-control" formControlName="lastName" />
-					<div *ngIf="f['lastName'].touched && f['lastName'].invalid" class="error-message">
-						Last name is required.
-					</div>
-				</div>
-			</div>
-			<div class="form-group inputs">
-				<label for="email">Email</label>
-				<input type="email" id="email" class="form-control" formControlName="email" />
-				<div *ngIf="f['email'].touched && f['email'].invalid" class="error-message">
-					<ng-container *ngIf="f['email'].errors?.['required']">Email is required.</ng-container>
-					<ng-container *ngIf="f['email'].errors?.['email']">Enter a valid email.</ng-container>
-				</div>
-			</div>
-			<div class="form-row">
-				<div class="form-group inputs" style="flex:1; margin-right: 0.5rem;">
-					<label for="password">Password</label>
-					<input type="password" id="password" class="form-control" formControlName="password" />
-					<div *ngIf="f['password'].touched && f['password'].invalid" class="error-message">
-						<ng-container *ngIf="f['password'].errors?.['required']">Password is required.</ng-container>
-						<ng-container *ngIf="f['password'].errors?.['minlength']">Minimum 8 characters.</ng-container>
-						<ng-container *ngIf="f['password'].errors?.['pattern']">Password must have 1 uppercase, 1 number, 1 special character.</ng-container>
-					</div>
-				</div>
-				<div class="form-group inputs" style="flex:1; margin-left: 0.5rem;">
-					<label for="confirmPassword">Confirm Password</label>
-					<input type="password" id="confirmPassword" class="form-control" formControlName="confirmPassword" />
-					<div *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid" class="error-message">
-						<ng-container *ngIf="f['confirmPassword'].errors?.['required']">Confirm password is required.</ng-container>
-						<ng-container *ngIf="f['confirmPassword'].errors?.['mismatch']">Passwords do not match.</ng-container>
-					</div>
-				</div>
-			</div>
-			<div class="form-group inputs">
-				<label for="location">Location</label>
-				<input type="text" id="location" class="form-control" formControlName="location" />
-				<div *ngIf="f['location'].touched && f['location'].invalid" class="error-message">
-					Location is required.
-				</div>
-			</div>
-			<div class="form-group inputs">
-				<label for="address">Full Address</label>
-				<textarea id="address" class="form-control address-textarea" formControlName="address" rows="2"></textarea>
-				<div *ngIf="f['address'].touched && f['address'].invalid" class="error-message">
-					Address is required.
-				</div>
-			</div>
-            <div class="signup-section">
-							<span>Already have an account? </span>
-							<a href="login">Sign in</a>
-						</div>
-			<div *ngIf="formValidated" class="form-validate-message">
-				<span>Form is being validated...</span>
-			</div>
-			<button type="submit" class="login-btn">Register</button>
-		</form>
-	</div>
+  <div class="register-card">
+    <div class="login-header">
+      <span class="login-title">Register</span>
+      <img src="assets/logo.PNG" alt="FidZulu Logo" class="login-logo" />
+    </div>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+      <div class="form-row">
+        <div class="form-group inputs" style="flex: 1; margin-right: 0.5rem">
+          <label for="firstName">First Name</label>
+          <input
+            type="text"
+            id="firstName"
+            class="form-control"
+            formControlName="firstName"
+          />
+          <div
+            *ngIf="f['firstName'].touched && f['firstName'].invalid"
+            class="error-message"
+          >
+            First name is required.
+          </div>
+        </div>
+        <div class="form-group inputs" style="flex: 1; margin-left: 0.5rem">
+          <label for="lastName">Last Name</label>
+          <input
+            type="text"
+            id="lastName"
+            class="form-control"
+            formControlName="lastName"
+          />
+          <div
+            *ngIf="f['lastName'].touched && f['lastName'].invalid"
+            class="error-message"
+          >
+            Last name is required.
+          </div>
+        </div>
+      </div>
+      <div class="form-group inputs">
+        <label for="email">Email</label>
+        <input
+          type="email"
+          id="email"
+          class="form-control"
+          formControlName="email"
+        />
+        <div
+          *ngIf="f['email'].touched && f['email'].invalid"
+          class="error-message"
+        >
+          <ng-container *ngIf="f['email'].errors?.['required']"
+            >Email is required.</ng-container
+          >
+          <ng-container *ngIf="f['email'].errors?.['email']"
+            >Enter a valid email.</ng-container
+          >
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group inputs" style="flex: 1; margin-right: 0.5rem">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            class="form-control"
+            formControlName="password"
+          />
+          <div
+            *ngIf="f['password'].touched && f['password'].invalid"
+            class="error-message"
+          >
+            <ng-container *ngIf="f['password'].errors?.['required']"
+              >Password is required.</ng-container
+            >
+            <ng-container *ngIf="f['password'].errors?.['minlength']"
+              >Minimum 8 characters.</ng-container
+            >
+            <ng-container *ngIf="f['password'].errors?.['pattern']"
+              >Password must have 1 uppercase, 1 number, 1 special
+              character.</ng-container
+            >
+          </div>
+        </div>
+        <div class="form-group inputs" style="flex: 1; margin-left: 0.5rem">
+          <label for="confirmPassword">Confirm Password</label>
+          <input
+            type="password"
+            id="confirmPassword"
+            class="form-control"
+            formControlName="confirmPassword"
+          />
+          <div
+            *ngIf="f['confirmPassword'].touched && f['confirmPassword'].invalid"
+            class="error-message"
+          >
+            <ng-container *ngIf="f['confirmPassword'].errors?.['required']"
+              >Confirm password is required.</ng-container
+            >
+            <ng-container *ngIf="f['confirmPassword'].errors?.['mismatch']"
+              >Passwords do not match.</ng-container
+            >
+          </div>
+        </div>
+      </div>
+      <div class="form-group inputs">
+        <label for="location">Location</label>
+        <select
+          id="location"
+          class="form-control"
+          formControlName="location"
+          required
+        >
+          <option value="" disabled>Select a country</option>
+          <option value="Ireland">Ireland</option>
+          <option value="United States">United States</option>
+          <option value="India">India</option>
+        </select>
+        <div
+          *ngIf="f['location'].touched && f['location'].invalid"
+          class="error-message"
+        >
+          Location is required.
+        </div>
+      </div>
+      <div class="form-group inputs">
+        <label for="address">Full Address</label>
+        <textarea
+          id="address"
+          class="form-control address-textarea"
+          formControlName="address"
+          rows="2"
+        ></textarea>
+        <div
+          *ngIf="f['address'].touched && f['address'].invalid"
+          class="error-message"
+        >
+          Address is required.
+        </div>
+      </div>
+      <div class="signup-section">
+        <span>Already have an account? </span>
+        <a href="login">Sign in</a>
+      </div>
+      <div *ngIf="formValidated" class="form-validate-message">
+        <span>Form is being validated...</span>
+      </div>
+      <button type="submit" class="login-btn">Register</button>
+    </form>
+  </div>
 </div>
