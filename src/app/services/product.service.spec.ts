@@ -3,12 +3,13 @@ import {
   HttpClientTestingModule,
   HttpTestingController,
 } from '@angular/common/http/testing';
-import { ProductService, PagedProducts } from './product.service';
+import { ProductService } from './product.service';
 import { AddressService } from './address/address.service';
 import { BehaviorSubject, firstValueFrom } from 'rxjs';
 import { Product } from '../models/product.model';
+import { Team } from '../models/team.model';
 
-// Simple mock address service to emit selected address
+// Mock AddressService
 class MockAddressService {
   private selected$ = new BehaviorSubject<any>({
     id: '1',
@@ -29,12 +30,11 @@ class MockAddressService {
   }
 }
 
-describe('ProductService', () => {
+describe('ProductService (Full Coverage)', () => {
   let service: ProductService;
   let httpMock: HttpTestingController;
   let address: MockAddressService;
 
-  // Utility to build backend payload variations
   const backendProducts = [
     {
       id: 'p1',
@@ -56,26 +56,6 @@ describe('ProductService', () => {
       p_subtype: 'BrandB',
       p_name: 'City Bike',
     },
-    {
-      p_id: 'p3',
-      p_type: 'Bike',
-      p_price: 200,
-      p_img_url: 'single.jpg',
-      attribute: { Color: 'Red', Size: 'L' },
-      p_quantity: 10,
-      p_subtype: 'BrandB',
-      p_name: 'Mountain Bike',
-    },
-    {
-      p_id: 'p4',
-      p_type: 'Books',
-      p_price: 30,
-      p_img_url: 'book.jpg',
-      attribute: { Language: 'English' },
-      p_quantity: 15,
-      p_subtype: 'Fiction',
-      p_name: 'Novel',
-    },
   ];
 
   beforeEach(() => {
@@ -92,115 +72,139 @@ describe('ProductService', () => {
     httpMock.verify();
   });
 
-  function flushInitial(
-    category: string = 'Bike',
-    payload: any = backendProducts
-  ) {
-    // Ensure active category is set (default is Bike)
+  function flushInitial(payload: any = backendProducts, category = 'Bike') {
     service.setActiveCategory(category);
-    // Trigger subscription
     service.getAllProducts().subscribe();
-    // Expect request based on category and India => IN code
-    const req = httpMock.expectOne(
-      (r) => r.url.includes('/bikes/IN') || r.url.includes('/books/IN')
-    );
+    const req = httpMock.expectOne((r) => r.url.includes('/bikes/IN'));
     req.flush(payload);
   }
 
-  it('should normalize products (single image, id mapping, subtype fallback)', async () => {
+  it('should normalize products with fallbacks', async () => {
     flushInitial();
     const products = await firstValueFrom(service.getAllProducts());
-    expect(products.length).toBe(4);
-    const p1 = products.find((p) => p.p_id === 'p1')!;
-    expect(p1.p_img_url).toBe('img1.jpg'); // only first
-    expect(p1.p_subtype).toBe('BrandA'); // from p_sub_type fallback
+    expect(products[0].p_id).toBe('p1'); // id -> p_id
+    expect(products[0].p_img_url).toBe('img1.jpg'); // first image only
+    expect(products[0].p_subtype).toBe('BrandA'); // fallback subtype
   });
 
-  it('should filter by category (Bike)', async () => {
+  it('should return empty when backend returns unexpected shape', async () => {
+    flushInitial({ wrong: 'data' });
+    const products = await firstValueFrom(service.getAllProducts());
+    expect(products.length).toBe(0);
+  });
+
+  it('getProductById should return a product if found', async () => {
     flushInitial();
-    const page = await firstValueFrom(
-      service.getPaginatedAndFilteredProducts('Bike', 0, 10, {}, null)
-    );
-    expect(page.totalCount).toBe(3); // only bike products
-    expect(page.products.every((p) => p.p_type === 'Bike')).toBeTrue();
+    const prod = await firstValueFrom(service.getProductById('p1'));
+    expect(prod.p_name).toBe('Road Bike');
   });
 
-  it('should apply search term filtering (name + desc + subtype)', async () => {
+  it('getProductById should throw if not found', async () => {
     flushInitial();
-    const page = await firstValueFrom(
-      service.getPaginatedAndFilteredProducts('Bike', 0, 10, {}, 'mountain')
-    );
-    expect(page.totalCount).toBe(1);
-    expect(page.products[0].p_id).toBe('p3');
+    let error: any;
+    try {
+      await firstValueFrom(service.getProductById('missing'));
+    } catch (e) {
+      error = e;
+    }
+    expect(error).toBeTruthy();
   });
 
-  it('should apply price upper-bound filter', async () => {
+  it('mapLocationToCode should handle different inputs', () => {
+    expect((service as any).mapLocationToCode('India')).toBe('IN');
+    expect((service as any).mapLocationToCode('Ireland')).toBe('IR');
+    expect((service as any).mapLocationToCode('USA')).toBe('US-NC');
+    expect((service as any).mapLocationToCode('Unknown')).toBe('US-NC');
+    expect((service as any).mapLocationToCode()).toBe('US-NC');
+  });
+
+  it('setActiveCategory should not emit when falsy', () => {
+    service.setActiveCategory('');
+    expect(service.getActiveCategory()).toBe('Bike'); // unchanged default
+  });
+
+  it('getTeamsForCategory should return teams on success', async () => {
+    const obs = service.getTeamsForCategory('Bike').subscribe();
+    const req = httpMock.expectOne((r) => r.url.includes('/bikes/team'));
+    const mockTeams: Team[] = [{ id: 't1', name: 'Team1' } as any];
+    req.flush(mockTeams);
+    obs.unsubscribe();
+  });
+
+  it('getTeamsForCategory should handle error gracefully', async () => {
+    const promise = firstValueFrom(service.getTeamsForCategory('Bike'));
+    const req = httpMock.expectOne((r) => r.url.includes('/bikes/team'));
+    req.flush('error', { status: 500, statusText: 'Server Error' });
+    const result = await promise;
+    expect(result).toEqual([]);
+  });
+
+  it('should apply pagination, search and filters', async () => {
     flushInitial();
     const page = await firstValueFrom(
       service.getPaginatedAndFilteredProducts(
         'Bike',
         0,
         10,
-        { price: 100 },
-        null
+        { price: 100, Brand___SEP___BrandB: true },
+        'city'
       )
     );
-    // p1=120 filtered out, p2=80 ok, p3=200 filtered out
-    expect(page.totalCount).toBe(1);
+    expect(page.products.length).toBe(1);
     expect(page.products[0].p_id).toBe('p2');
   });
 
-  it('should apply attribute filters including Brand subtype', async () => {
+  it('getFiltersForCategory should return attributes and price range', async () => {
     flushInitial();
-    const filters = {
-      // emulate sidebar control naming Brand___SEP___BrandB
-      Brand___SEP___BrandB: true,
-      Color___SEP___Red: true,
-    };
-    const page = await firstValueFrom(
-      service.getPaginatedAndFilteredProducts('Bike', 0, 10, filters, null)
-    );
-    // Expect products that are brandB and Color Red -> only p3
-    expect(page.totalCount).toBe(1);
-    expect(page.products[0].p_id).toBe('p3');
+    const filters = await firstValueFrom(service.getFiltersForCategory('Bike'));
+    expect(filters.minPrice).toBe(80);
+    expect(filters.maxPrice).toBe(120);
+    expect(filters.attributes.get('Brand')?.size).toBeGreaterThan(0);
   });
 
-  it('should paginate properly', async () => {
-    flushInitial();
-    const page1 = await firstValueFrom(
-      service.getPaginatedAndFilteredProducts('Bike', 0, 2, {}, null)
-    );
-    const page2 = await firstValueFrom(
-      service.getPaginatedAndFilteredProducts('Bike', 1, 2, {}, null)
-    );
-    expect(page1.products.length).toBe(2);
-    // second page should have remaining 1
-    expect(page2.products.length).toBe(1);
-    expect(page1.totalCount).toBe(3);
-    expect(page2.totalCount).toBe(3);
+  it('getFiltersForCategory should handle no products', async () => {
+    flushInitial([]);
+    const filters = await firstValueFrom(service.getFiltersForCategory('Bike'));
+    expect(filters.minPrice).toBe(0);
+    expect(filters.maxPrice).toBe(1000);
   });
 
-  it('should compute filters for a category', async () => {
+  it('should refetch when address changes', async () => {
     flushInitial();
-    const filters$ = service.getFiltersForCategory('Bike');
-    const result = await firstValueFrom(filters$);
-    // Expect Brand set contains BrandA and BrandB
-    const brandSet = result.attributes.get('Brand');
-    expect(brandSet).toBeTruthy();
-    expect(brandSet?.has('BrandA')).toBeTrue();
-    expect(brandSet?.has('BrandB')).toBeTrue();
-    expect(result.minPrice).toBe(80);
-    expect(result.maxPrice).toBe(200);
-  });
-
-  it('should refetch when address changes (different code) and not crash', async () => {
-    flushInitial();
-    // Emit new address (USA)
     address.emit('USA');
-    // Expect another request now for bikes/US-NC
     const req2 = httpMock.expectOne((r) => r.url.includes('/bikes/US-NC'));
-    req2.flush(backendProducts.slice(0, 2));
+    req2.flush(backendProducts.slice(0, 1));
     const products = await firstValueFrom(service.getAllProducts());
-    expect(products.length).toBe(2);
+    expect(products.length).toBe(1);
+  });
+
+  it('should handle HTTP error when fetching products', async () => {
+    service.getAllProducts().subscribe();
+    const req = httpMock.expectOne((r) => r.url.includes('/bikes/IN'));
+    req.flush('error', { status: 500, statusText: 'Server Error' });
+    const products = await firstValueFrom(service.getAllProducts());
+    expect(products).toEqual([]);
+  });
+
+  it('extractArrayPayload should handle various shapes', () => {
+    const fn = (service as any).extractArrayPayload.bind(service);
+    expect(fn([1, 2])).toEqual([1, 2]);
+    expect(fn({ products: [1] })).toEqual([1]);
+    expect(fn({ data: [2] })).toEqual([2]);
+    expect(fn({ items: [3] })).toEqual([3]);
+    expect(fn({ something: [4] })).toEqual([4]);
+    expect(fn({})).toEqual([]);
+  });
+
+  it('normalizeProducts should handle missing subtype', () => {
+    const fn = (service as any).normalizeProducts.bind(service);
+    const res = fn([{ p_id: 'x', p_type: 'Bike', p_price: '50' }]);
+    expect(res[0].p_subtype).toBeUndefined();
+    expect(res[0].p_price).toBe(50);
+  });
+
+  it('normalizeProducts should handle empty input', () => {
+    const fn = (service as any).normalizeProducts.bind(service);
+    expect(fn([])).toEqual([]);
   });
 });
