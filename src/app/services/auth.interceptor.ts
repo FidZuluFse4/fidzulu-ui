@@ -26,5 +26,6 @@ export const authInterceptor: HttpInterceptorFn = (
       Authorization: `Bearer ${token}`,
     },
   });
+  console.log("From interceptor: " + token);
   return next(authReq);
 };
