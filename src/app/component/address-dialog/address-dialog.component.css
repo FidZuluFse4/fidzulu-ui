@@ -68,7 +68,6 @@
 
 ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 12px !important;
-  min-width: 420px !important; /* allow smaller desktops/laptops */
   min-height: 420px !important;
   max-height: 90vh !important;
   display: flex !important;
@@ -91,7 +90,6 @@
 /* Dialog surface sizing when inside a dialog overlay pane */
 ::ng-deep .cdk-overlay-pane .mat-mdc-dialog-container .mdc-dialog__surface {
   border-radius: 12px !important;
-  min-width: 420px !important;
   min-height: 420px !important;
   max-height: 90vh !important;
   display: flex !important;
@@ -103,7 +101,6 @@
 /* Constrain only dialog overlay panes so other overlay panes (like select panels) behave normally */
 ::ng-deep .cdk-overlay-pane .mat-mdc-dialog-container {
   max-width: 80vw !important;
-  min-width: 320px !important;
   display: block !important;
 }
 
@@ -125,7 +122,6 @@
 
   /* allow the surface to be narrower on small screens */
   ::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
-    min-width: 320px !important;
     width: 78vw !important;
   }
 

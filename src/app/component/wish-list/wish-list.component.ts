@@ -49,7 +49,7 @@ export class WishListComponent implements OnInit {
   ngOnInit() {
     // Seed state
     this.userService.getCurrentUser().subscribe();
-    this.userService.wishlist$.subscribe((list) => {
+    this.userService.getWishList().subscribe((list) => {
       this.wishlist = list;
     });
     // Reflect cart quantities so wishlist shows live cart state
