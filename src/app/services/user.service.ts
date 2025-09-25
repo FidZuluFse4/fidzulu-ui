@@ -5,12 +5,16 @@ import { BehaviorSubject, of, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ProductService } from './product.service';
 import { Product } from '../models/product.model';
+import { AuthService } from './auth.service';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
   private baseUrl = 'http://localhost:3000';
+
+  private applicationMiddleWareUrl = environment.lambda_1;
 
   private cartSubject = new BehaviorSubject<Order[]>([]);
   public readonly cart$ = this.cartSubject.asObservable();
@@ -19,7 +23,8 @@ export class UserService {
 
   constructor(
     private http: HttpClient,
-    private productService: ProductService
+    private productService: ProductService,
+    private authService: AuthService
   ) {}
 
   // getCurrentUser(): Observable<User> {
@@ -70,27 +75,30 @@ export class UserService {
 
   addToWishlist(productId: string): Observable<any> {
     // Backward compatibility: try to resolve real product first
-    const currentProducts = (this.productService as any).productsSubject
-      ?.value as Product[] | null;
-    let found: Product | undefined = undefined;
-    if (currentProducts) {
-      found = currentProducts.find((p) => p.p_id === productId);
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    console.log("User_id: " + user_id);
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
     }
-    if (!found) {
-      // fallback minimal product (should be rare)
-      found = {
-        p_id: productId,
-        p_type: 'generic',
-        p_name: 'Product',
-        p_price: 0,
-        p_currency: '$',
-      } as Product;
+    const url = `${this.applicationMiddleWareUrl}/api/wishlist/add`;
+    const url2 = `${this.applicationMiddleWareUrl}/api/wishlist/${user_id}`;
+    const body = { user_id: user_id, p_id: productId };
+    const res = this.http.post(url, body);
+    console.log(this.http.get(url2));
+    return res;
+  }
+
+  getWishList() :Observable<any> {
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    console.log("User_id: " + user_id);
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
     }
-    if (!this.mockUser.wishList.some((p) => p.p_id === productId)) {
-      this.mockUser.wishList.push(found);
-      this.wishlistSubject.next([...this.mockUser.wishList]);
-    }
-    return of({ success: true, added: true });
+    const url = `${this.applicationMiddleWareUrl}/api/wishlist/${user_id}`;
+    const res = this.http.get(url);
+    return res;
   }
 
   removeFromWishlist(productId: string): Observable<any> {
@@ -106,19 +114,21 @@ export class UserService {
   }
 
   toggleWishlist(product: Product): Observable<{ added: boolean }> {
-    if (this.isInWishlist(product.p_id)) {
-      this.mockUser.wishList = this.mockUser.wishList.filter(
-        (p) => p.p_id !== product.p_id
-      );
-      this.wishlistSubject.next([...this.mockUser.wishList]);
-      return of({ added: false });
-    } else {
-      // store a shallow copy to avoid accidental mutations
-      const copy: Product = { ...product };
-      this.mockUser.wishList.push(copy);
-      this.wishlistSubject.next([...this.mockUser.wishList]);
-      return of({ added: true });
-    }
+    // if (this.isInWishlist(product.p_id)) {
+    //   this.mockUser.wishList = this.mockUser.wishList.filter(
+    //     (p) => p.p_id !== product.p_id
+    //   );
+    //   this.wishlistSubject.next([...this.mockUser.wishList]);
+    //   return of({ added: false });
+    // } else {
+    //   // store a shallow copy to avoid accidental mutations
+    //   const copy: Product = { ...product };
+    //   this.mockUser.wishList.push(copy);
+    //   this.wishlistSubject.next([...this.mockUser.wishList]);
+    //   return of({ added: true });
+    // }
+
+    return this.addToWishlist(product.p_id);
   }
 
   addToCart(productId: string, quantity: number): Observable<any> {
