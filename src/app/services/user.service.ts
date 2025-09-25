@@ -143,32 +143,62 @@ export class UserService {
   }
 
   addToCart(productId: string, quantity: number): Observable<any> {
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
+    }
+
     // Determine price from current products if available
     let price = 100; // fallback
-    const currentProducts = (this.productService as any).productsSubject
-      ?.value as Product[] | null;
+    const currentProducts = (this.productService as any).productsSubject?.value as Product[] | null;
     if (currentProducts) {
       const found = currentProducts.find((p) => p.p_id === productId);
       if (found) price = Number(found.p_price) || price;
     }
 
-    const existingOrder = this.mockUser.cart.find((o) => o.p_id === productId);
-    if (existingOrder) {
-      existingOrder.quantity = quantity; // set to passed quantity (grid passes current)
-      existingOrder.amount = existingOrder.quantity * price;
-    } else {
-      const mockOrder: Order = {
-        o_id: Date.now().toString(),
-        p_id: productId,
-        user_id: this.mockUser.id.toString(),
-        quantity,
-        amount: price * quantity,
-      };
-      this.mockUser.cart.push(mockOrder);
-    }
-    this.cartSubject.next([...this.mockUser.cart]);
-    return of({ success: true });
+    const body = {
+      user_id,
+      p_id: productId,
+      quantity,
+      amount: price * quantity,
+    };
+
+    const url = `${this.applicationMiddleWareUrl}/api/order/place`;
+    return this.http.post<Order>(url, body);
   }
+
+  getCart(): Observable<Order[]> {
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    if (!user_id) {
+      return of([]);
+    }
+
+    const url = `${this.applicationMiddleWareUrl}/api/order/${user_id}`;
+    return this.http.get<{ items: Order[] }>(url).pipe(
+      switchMap((resp) => {
+        const orders = Array.isArray(resp) ? resp : resp.items;
+        if (!orders || orders.length === 0) return of([]);
+
+        // Fetch product details for each order
+        const enrichedOrders$ = orders.map((order) =>
+          this.productService.getProductById(order.p_id).pipe(
+            switchMap((product) => {
+              // Attach product to order
+              const enrichedOrder = { ...order, product };
+              return of(enrichedOrder);
+            }),
+            catchError(() => of(order)) // fallback to plain order if product fetch fails
+          )
+        );
+
+        return combineLatest(enrichedOrders$);
+      }),
+      catchError(() => of([]))
+    );
+  }
+
 
   removeFromCart(orderId: string): Observable<any> {
     this.mockUser.cart = this.mockUser.cart.filter((o) => o.o_id !== orderId);

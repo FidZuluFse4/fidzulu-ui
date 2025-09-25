@@ -53,7 +53,7 @@ export class CartComponent implements OnInit {
     });
 
     // Reactive cart stream
-    this.userService.cart$.subscribe((cart) => {
+    this.userService.getCart().subscribe((cart) => {
       this.cart = cart;
       this.recalculateLineAmounts();
       this.calculateTotal();
