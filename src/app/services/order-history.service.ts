@@ -56,7 +56,7 @@ export class OrderHistoryService {
 
     if (error.error instanceof ErrorEvent) {
       // Client-side error
-      errorMessage = `Error: ${error.error.message}`;
+      errorMessage = `Error: Cant get Orders`;
     } else {
       // Server-side error
       if (error.status === 404) {
@@ -66,7 +66,7 @@ export class OrderHistoryService {
           );
         }
       }
-      errorMessage = `Error Code: ${error.status}\nMessage: ${error.message}`;
+      errorMessage = `Error Code: Error: Cant get Orders`;
     }
 
     return throwError(() => new Error(errorMessage));
