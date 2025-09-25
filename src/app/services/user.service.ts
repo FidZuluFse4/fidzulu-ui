@@ -115,9 +115,10 @@ export class UserService {
     if (!user_id) {
       return of({ success: false, error: 'User not authenticated' });
     }
-    // Use DELETE with query params for RESTful API
-    const url = `${this.applicationMiddleWareUrl}/api/wishlist/remove?user_id=${encodeURIComponent(user_id)}&p_id=${encodeURIComponent(productId)}`;
-    return this.http.delete(url);
+    // Use DELETE with body (Angular supports this via options)
+    const url = `${this.applicationMiddleWareUrl}/api/wishlist/remove`;
+    const options = { body: { user_id: user_id, p_id: productId } };
+    return this.http.delete(url, options);
   }
 
   isInWishlist(productId: string): boolean {
