@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
 import { Order } from '../models/order.model';
-import { BehaviorSubject, of, Observable, switchMap, combineLatest, catchError } from 'rxjs';
+import { BehaviorSubject, Observable, switchMap, combineLatest, catchError, of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ProductService } from './product.service';
 import { Product } from '../models/product.model';
@@ -55,38 +55,44 @@ export class UserService {
   //   return this.http.post(`${this.baseUrl}/checkout`, {});
   // }
 
-  // ================= MOCK IMPLEMENTATION =================
-  private mockUser: User = {
-    id: '1',
-    name: 'Rimjhim',
-    username: 'rimjhim123',
-    password: 'password',
-    address: [],
-    wishList: [],
-    cart: [],
-  };
-
+  // No mockUser. getCurrentUser should fetch from backend if needed, or use AuthService only.
   getCurrentUser(): Observable<User> {
-    // keep cartSubject synced
-    this.cartSubject.next(this.mockUser.cart);
-    this.wishlistSubject.next(this.mockUser.wishList);
-    return of(this.mockUser);
+    // If you have a backend endpoint for user, use it here. Otherwise, return user from AuthService.
+    const user = this.authService.getCurrentUser();
+    // Patch: Ensure returned object matches User type
+    if (user && user.user_id) {
+      // Fill with minimal User info if only user_id is available
+      return of({
+        id: user.user_id,
+        name: '',
+        username: '',
+        password: '',
+        address: [],
+        wishList: [],
+        cart: [],
+      });
+    }
+    // If not authenticated, return empty user
+    return of({
+      id: '',
+      name: '',
+      username: '',
+      password: '',
+      address: [],
+      wishList: [],
+      cart: [],
+    });
   }
 
   addToWishlist(productId: string): Observable<any> {
-    // Backward compatibility: try to resolve real product first
     const user = this.authService.getCurrentUser();
     const user_id = user && user.user_id ? user.user_id : null;
-    console.log("User_id: " + user_id);
     if (!user_id) {
       return of({ success: false, error: 'User not authenticated' });
     }
     const url = `${this.applicationMiddleWareUrl}/api/wishlist/add`;
-    const url2 = `${this.applicationMiddleWareUrl}/api/wishlist/${user_id}`;
     const body = { user_id: user_id, p_id: productId };
-    const res = this.http.post(url, body);
-    console.log(this.http.get(url2));
-    return res;
+    return this.http.post(url, body);
   }
 
   getWishList(): Observable<Product[]> {
@@ -122,25 +128,22 @@ export class UserService {
   }
 
   isInWishlist(productId: string): boolean {
-    return this.mockUser.wishList.some((p) => p.p_id === productId);
+    // This should check from the current wishlistSubject value
+    const wishlist = this.wishlistSubject.value;
+    return wishlist.some((p) => p.p_id === productId);
   }
 
   toggleWishlist(product: Product): Observable<{ added: boolean }> {
-    // if (this.isInWishlist(product.p_id)) {
-    //   this.mockUser.wishList = this.mockUser.wishList.filter(
-    //     (p) => p.p_id !== product.p_id
-    //   );
-    //   this.wishlistSubject.next([...this.mockUser.wishList]);
-    //   return of({ added: false });
-    // } else {
-    //   // store a shallow copy to avoid accidental mutations
-    //   const copy: Product = { ...product };
-    //   this.mockUser.wishList.push(copy);
-    //   this.wishlistSubject.next([...this.mockUser.wishList]);
-    //   return of({ added: true });
-    // }
-
-    return this.addToWishlist(product.p_id);
+    // You may want to check if in wishlist and call remove or add accordingly
+    if (this.isInWishlist(product.p_id)) {
+      return this.removeFromWishlist(product.p_id).pipe(
+        switchMap(() => of({ added: false }))
+      );
+    } else {
+      return this.addToWishlist(product.p_id).pipe(
+        switchMap(() => of({ added: true }))
+      );
+    }
   }
 
   addToCart(productId: string, quantity: number): Observable<any> {
@@ -149,22 +152,18 @@ export class UserService {
     if (!user_id) {
       return of({ success: false, error: 'User not authenticated' });
     }
-
-    // Determine price from current products if available
-    let price = 100; // fallback
+    let price = 100;
     const currentProducts = (this.productService as any).productsSubject?.value as Product[] | null;
     if (currentProducts) {
       const found = currentProducts.find((p) => p.p_id === productId);
       if (found) price = Number(found.p_price) || price;
     }
-
     const body = {
       user_id,
       p_id: productId,
       quantity,
       amount: price * quantity,
     };
-
     const url = `${this.applicationMiddleWareUrl}/api/order/place`;
     return this.http.post<Order>(url, body);
   }
@@ -175,25 +174,21 @@ export class UserService {
     if (!user_id) {
       return of([]);
     }
-
     const url = `${this.applicationMiddleWareUrl}/api/order/${user_id}`;
     return this.http.get<{ items: Order[] }>(url).pipe(
       switchMap((resp) => {
         const orders = Array.isArray(resp) ? resp : resp.items;
         if (!orders || orders.length === 0) return of([]);
-
         // Fetch product details for each order
         const enrichedOrders$ = orders.map((order) =>
           this.productService.getProductById(order.p_id).pipe(
             switchMap((product) => {
-              // Attach product to order
               const enrichedOrder = { ...order, product };
               return of(enrichedOrder);
             }),
-            catchError(() => of(order)) // fallback to plain order if product fetch fails
+            catchError(() => of(order))
           )
         );
-
         return combineLatest(enrichedOrders$);
       }),
       catchError(() => of([]))
@@ -230,14 +225,41 @@ updateCartItem(orderId: string, quantity: number, amount: number): Observable<an
 
 
   updateCart(cart: Order[]): Observable<any> {
-    this.mockUser.cart = [...cart];
-    this.cartSubject.next([...this.mockUser.cart]);
-    return of({ success: true });
+    // This should update each cart item in backend if needed, or just refresh local state from backend
+    // If you have a batch update endpoint, use it here. Otherwise, update each item individually.
+    // For now, just refresh cart from backend
+    return this.getCart().pipe(
+      switchMap((orders) => {
+        this.cartSubject.next([...orders]);
+        return of({ success: true });
+      })
+    );
   }
 
   checkoutCart(): Observable<any> {
-    this.mockUser.cart = [];
-    this.cartSubject.next([]);
-    return of({ success: true });
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
+    }
+    // Get all orders from backend
+    return this.getCart().pipe(
+      switchMap((orders) => {
+        if (!orders || orders.length === 0) {
+          this.cartSubject.next([]);
+          return of({ success: true });
+        }
+        const deleteCalls = orders.map(order => {
+          const url = `${this.applicationMiddleWareUrl}/api/order/delete/${encodeURIComponent(order.o_id)}`;
+          return this.http.delete(url).pipe(catchError(() => of({ success: false, orderId: order.o_id })));
+        });
+        return combineLatest(deleteCalls).pipe(
+          switchMap(() => {
+            this.cartSubject.next([]);
+            return of({ success: true });
+          })
+        );
+      })
+    );
   }
 }
