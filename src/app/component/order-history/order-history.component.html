@@ -1,0 +1,133 @@
+<div class="order-history-container">
+  <div class="order-history-header">
+    <h1>Your Order History</h1>
+  </div>
+
+  <!-- Loading spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading your orders...</p>
+  </div>
+
+  <!-- Error message -->
+  <div *ngIf="error && !isLoading" class="error-container">
+    <p class="error-message">{{ error }}</p>
+    <button mat-raised-button color="primary" (click)="loadOrderHistory()">
+      Try Again
+    </button>
+  </div>
+
+  <!-- No orders message -->
+  <div
+    *ngIf="!isLoading && !error && orders.length === 0"
+    class="no-orders-container"
+  >
+    <mat-icon class="empty-icon">shopping_bag</mat-icon>
+    <h2>No orders found</h2>
+    <p>You haven't placed any orders yet.</p>
+    <button mat-raised-button color="primary" (click)="navigateToHome()">
+      Browse Products
+    </button>
+  </div>
+
+  <!-- Orders list -->
+  <div *ngIf="!isLoading && !error && orders.length > 0" class="orders-list">
+    <mat-card *ngFor="let order of orders" class="order-card">
+      <mat-card-header>
+        <mat-card-title>Order #{{ order.orders_id }}</mat-card-title>
+        <mat-card-subtitle>
+          <span class="order-date">Order Placed</span>
+          <span class="order-status">Delivered</span>
+        </mat-card-subtitle>
+      </mat-card-header>
+
+      <mat-card-content>
+        <div class="order-summary">
+          <div class="summary-item">
+            <span class="label">Items</span>
+            <span class="value">{{ getTotalItems(order) }}</span>
+          </div>
+          <div class="summary-item">
+            <span class="label">Shipped to</span>
+            <span class="value">{{ order.address.location }}</span>
+          </div>
+          <div class="summary-item total">
+            <span class="label">Total</span>
+            <span class="value">${{ order.total_amount.toFixed(2) }}</span>
+          </div>
+        </div>
+
+        <!-- Expandable order details -->
+        <div
+          class="order-details"
+          [class.expanded]="expandedOrderId === order.orders_id"
+        >
+          <mat-divider></mat-divider>
+
+          <div
+            *ngIf="expandedOrderId === order.orders_id"
+            class="details-section"
+          >
+            <h3>Items</h3>
+            <div *ngFor="let item of order.order_list" class="order-item">
+              <!-- Product image and loading states -->
+              <div class="item-image-container">
+                <img *ngIf="getProductDetails(item.p_id)?.p_img_url; else defaultImg"
+                  [src]="getProductDetails(item.p_id)?.p_img_url" 
+                  [alt]="getProductDetails(item.p_id)?.p_name || 'Product image'"
+                  [title]="getProductDetails(item.p_id)?.p_name || 'Product image'"
+                  class="product-image"
+                  (error)="handleImageError($event)">
+                <ng-template #defaultImg>
+                  <img [src]="defaultImageUrl" alt="Default product image" class="product-image">
+                </ng-template>
+                
+                <!-- Loading spinner for product details -->
+                <div *ngIf="isProductLoading(item.p_id)" class="image-loader">
+                  <mat-spinner diameter="25"></mat-spinner>
+                </div>
+              </div>
+              
+              <div class="item-details">
+                <span class="item-name">
+                  {{ getProductDetails(item.p_id)?.p_name || 'Product #' + item.p_id }}
+                </span>
+                <span class="item-qty">Qty: {{ item.quantity }}</span>
+                <span class="item-price">${{ item.amount.toFixed(2) }}</span>
+              </div>
+              
+              <button
+                mat-button
+                color="primary"
+                (click)="viewProductDetails(item.p_id)"
+              >
+                View Product
+              </button>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="shipping-address">
+              <h3>Shipping Address</h3>
+              <p>{{ order.address.location }}: {{ order.address.full_addr }}</p>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+
+      <mat-card-actions>
+        <button
+          mat-button
+          color="primary"
+          (click)="toggleOrderDetails(order.orders_id)"
+        >
+          {{
+            expandedOrderId === order.orders_id
+              ? "Hide Details"
+              : "View Details"
+          }}
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
+</div>

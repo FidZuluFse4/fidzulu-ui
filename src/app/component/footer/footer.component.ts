@@ -16,4 +16,7 @@ export class FooterComponent {
   goToAboutUs() {
     this.router.navigate(['/about']);
   }
+  goToOrders() {
+    this.router.navigate(['/orders']);
+  }
 }

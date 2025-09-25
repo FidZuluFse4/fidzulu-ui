@@ -8,14 +8,24 @@ import { AboutRouteComponent } from './routes/about-route/about-route.component'
 import { ProductDetailsRouteComponent } from './routes/product-details-route/product-details-route.component';
 import { authGuard } from './services/auth.guard';
 import { noAuthGuard } from './services/no-auth.guard';
+import { OrderHistoryRouteComponent } from './routes/order-history-route/order-history-route.component';
 
 export const routes: Routes = [
   { path: 'landing', component: LandingComponent, canActivate: [authGuard] },
   { path: 'login', component: LoginComponent, canActivate: [noAuthGuard] },
-  { path: 'register', component: RegisterComponent, canActivate: [noAuthGuard] },
+  {
+    path: 'register',
+    component: RegisterComponent,
+    canActivate: [noAuthGuard],
+  },
   { path: '', component: LoginComponent, canActivate: [noAuthGuard] },
   { path: 'cart', component: CartComponent, canActivate: [authGuard] },
   { path: 'wishlist', component: WishListComponent, canActivate: [authGuard] },
   { path: 'product/:id', component: ProductDetailsRouteComponent },
-  { path: 'about', component: AboutRouteComponent },
+  { path: 'about', component: AboutRouteComponent, canActivate: [authGuard] },
+  {
+    path: 'orders',
+    component: OrderHistoryRouteComponent,
+    canActivate: [authGuard],
+  },
 ];
