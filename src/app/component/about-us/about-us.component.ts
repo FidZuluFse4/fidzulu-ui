@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Team, TeamMember } from '../../models/team.model';
 import { TeamService } from '../../services/team.service';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-about-us',
@@ -10,15 +11,21 @@ import { CommonModule } from '@angular/common';
   templateUrl: './about-us.component.html',
   styleUrl: './about-us.component.css',
 })
-export class AboutUsComponent implements OnInit {
+export class AboutUsComponent implements OnInit, OnDestroy {
   teams: Team[] = [];
+  private sub?: Subscription;
 
   constructor(private teamService: TeamService) {}
 
   ngOnInit(): void {
-    // scroll on top
     window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
-    this.teams = this.teamService.getTeams();
+    this.sub = this.teamService.getTeams().subscribe((teams) => {
+      this.teams = teams;
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.sub?.unsubscribe();
   }
 
   getPhoto(member: TeamMember, team: string): string {

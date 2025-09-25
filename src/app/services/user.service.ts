@@ -59,6 +59,9 @@ export class UserService {
   };
 
   getCurrentUser(): Observable<User> {
+    // keep cartSubject synced
+    this.cartSubject.next(this.mockUser.cart);
+    this.wishlistSubject.next(this.mockUser.wishList);
     return of(this.mockUser);
   }
 
@@ -87,39 +90,73 @@ export class UserService {
     this.mockUser.wishList = this.mockUser.wishList.filter(
       (p) => p.p_id !== productId
     );
+    this.wishlistSubject.next([...this.mockUser.wishList]);
     return of({ success: true });
   }
 
+  isInWishlist(productId: string): boolean {
+    return this.mockUser.wishList.some((p) => p.p_id === productId);
+  }
+
+  toggleWishlist(product: Product): Observable<{ added: boolean }> {
+    if (this.isInWishlist(product.p_id)) {
+      this.mockUser.wishList = this.mockUser.wishList.filter(
+        (p) => p.p_id !== product.p_id
+      );
+      this.wishlistSubject.next([...this.mockUser.wishList]);
+      return of({ added: false });
+    } else {
+      // store a shallow copy to avoid accidental mutations
+      const copy: Product = { ...product };
+      this.mockUser.wishList.push(copy);
+      this.wishlistSubject.next([...this.mockUser.wishList]);
+      return of({ added: true });
+    }
+  }
+
   addToCart(productId: string, quantity: number): Observable<any> {
+    // Determine price from current products if available
+    let price = 100; // fallback
+    const currentProducts = (this.productService as any).productsSubject
+      ?.value as Product[] | null;
+    if (currentProducts) {
+      const found = currentProducts.find((p) => p.p_id === productId);
+      if (found) price = Number(found.p_price) || price;
+    }
+
     const existingOrder = this.mockUser.cart.find((o) => o.p_id === productId);
     if (existingOrder) {
-      existingOrder.quantity += quantity;
-      existingOrder.amount = existingOrder.quantity * 100; // mock price
+      existingOrder.quantity = quantity; // set to passed quantity (grid passes current)
+      existingOrder.amount = existingOrder.quantity * price;
     } else {
       const mockOrder: Order = {
-        o_id: Date.now().toLocaleString(),
+        o_id: Date.now().toString(),
         p_id: productId,
         user_id: this.mockUser.id.toString(),
         quantity,
-        amount: 100 * quantity,
+        amount: price * quantity,
       };
       this.mockUser.cart.push(mockOrder);
     }
+    this.cartSubject.next([...this.mockUser.cart]);
     return of({ success: true });
   }
 
   removeFromCart(orderId: string): Observable<any> {
     this.mockUser.cart = this.mockUser.cart.filter((o) => o.o_id !== orderId);
+    this.cartSubject.next([...this.mockUser.cart]);
     return of({ success: true });
   }
 
   updateCart(cart: Order[]): Observable<any> {
     this.mockUser.cart = [...cart];
+    this.cartSubject.next([...this.mockUser.cart]);
     return of({ success: true });
   }
 
   checkoutCart(): Observable<any> {
     this.mockUser.cart = [];
+    this.cartSubject.next([]);
     return of({ success: true });
   }
 }

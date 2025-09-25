@@ -1,10 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Product } from '../models/product.model';
-import { Observable, of, BehaviorSubject } from 'rxjs';
-import { map, switchMap, tap, filter, finalize } from 'rxjs/operators';
+import { Observable, of, BehaviorSubject, combineLatest } from 'rxjs';
+import {
+  map,
+  switchMap,
+  tap,
+  filter,
+  finalize,
+  catchError,
+  distinctUntilChanged,
+} from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 import { AddressService } from './address/address.service';
+import { Team } from '../models/team.model';
 
 export interface PagedProducts {
   products: Product[];
@@ -30,85 +39,70 @@ export class ProductService {
   private isLoadingSubject = new BehaviorSubject<boolean>(false);
   public readonly isLoading$ = this.isLoadingSubject.asObservable();
   private addressListenerStarted = false;
-  private bikeBase = environment.bikeUrl;
+  // Derived dynamically from environment.bikeUrl (which currently points at essentials/bikes)
+  private essentialsRoot: string;
+  private mediatronicsRoot: string;
+
+  // Active category subject (default Bike)
+  private activeCategorySubject = new BehaviorSubject<string>('Bike');
+  public readonly activeCategory$ = this.activeCategorySubject
+    .asObservable()
+    .pipe(distinctUntilChanged());
+
+  // Category -> group + path segment mapping
+  private categoryConfig: Record<
+    string,
+    { group: 'essentials' | 'mediatronics'; path: string }
+  > = {
+    Bike: { group: 'essentials', path: 'bikes' },
+    Food: { group: 'essentials', path: 'food' },
+    Toys: { group: 'essentials', path: 'toys' },
+    Books: { group: 'mediatronics', path: 'books' },
+    DVD: { group: 'mediatronics', path: 'dvds/all' },
+    Laptops: { group: 'mediatronics', path: 'laptops/all' },
+  };
   // Separator used by filter sidebar to build control names
   private readonly FILTER_CONTROL_SEP = '___SEP___';
 
   constructor(
     private http: HttpClient,
     private addressService: AddressService
-  ) {}
+  ) {
+    // essentialsBase now: .../essentials
+    this.essentialsRoot = environment.lambda_essentials;
+    this.mediatronicsRoot = environment.lambda_mediatronics;
+  }
 
   // Start listening to selected address changes and fetch products accordingly
   private startAddressListener(): void {
     if (this.addressListenerStarted) return;
     this.addressListenerStarted = true;
 
-    this.addressService
-      .getSelectedAddress()
+    combineLatest([
+      this.addressService.getSelectedAddress(),
+      this.activeCategory$,
+    ])
       .pipe(
-        switchMap((address) => {
+        switchMap(([address, category]) => {
           const code = this.mapLocationToCode(address?.location);
-          const url = `${this.bikeBase}/${code}`;
-          // Debug logging to understand what URL is requested
+          const { url } = this.buildCategoryUrls(category, code);
           console.debug('[ProductService] fetching products for', {
             location: address?.location,
             code,
+            category,
             url,
           });
-          // mark loading and fetch
           this.isLoadingSubject.next(true);
           return this.http.get<any>(url).pipe(
-            map((resp) => {
-              // Debug the raw response shape
-              console.debug('[ProductService] raw HTTP response:', resp);
-
-              // Common envelopes: [], { products: [] }, { data: [] }, { items: [] }
-              if (Array.isArray(resp)) return resp;
-              if (resp && Array.isArray(resp.products)) return resp.products;
-              if (resp && Array.isArray(resp.data)) return resp.data;
-              if (resp && Array.isArray(resp.items)) return resp.items;
-
-              // Try to find the first array value in the response object
-              if (resp && typeof resp === 'object') {
-                const found = Object.values(resp).find((v) => Array.isArray(v));
-                if (found) return found as any[];
-              }
-
-              // Fallback: if nothing found, return empty array to avoid runtime errors
-              console.warn(
-                '[ProductService] unexpected response shape, returning empty product list'
-              );
-              return [] as any[];
-            }),
-            finalize(() => this.isLoadingSubject.next(false))
+            map((resp) => this.extractArrayPayload(resp)),
+            finalize(() => this.isLoadingSubject.next(false)),
+            catchError((err) => {
+              console.error('[ProductService] fetch error', err);
+              return of([]);
+            })
           );
         }),
-        map((rawProducts: any[]) => {
-          // Normalize each product to the Product interface used in the app
-          return (rawProducts || []).map((rp: any) => {
-            const normalized: Product = {
-              p_id: rp.p_id ?? rp.id,
-              p_type: rp.p_type ?? rp.pType ?? rp.type ?? 'Unknown',
-              p_subtype:
-                rp.p_subtype ?? rp.p_sub_type ?? rp.pSubType ?? undefined,
-              p_name: rp.p_name ?? rp.name ?? 'Unnamed',
-              p_desc: rp.p_desc ?? rp.description ?? '',
-              p_currency: rp.p_currency ?? rp.currency ?? undefined,
-              p_price: Number(rp.p_price) || 0,
-              p_img_url: Array.isArray(rp.p_img_url)
-                ? rp.p_img_url[0]
-                : rp.p_img_url,
-              attribute: rp.attribute ?? rp.attributes ?? {},
-              p_quantity: rp.p_quantity ?? rp.quantity ?? 0,
-            } as Product;
-
-            // Ensure subtype is present in p_subtype
-            if (!normalized.p_subtype && rp.p_sub_type)
-              normalized.p_subtype = rp.p_sub_type;
-            return normalized;
-          });
-        })
+        map((rawProducts: any[]) => this.normalizeProducts(rawProducts))
       )
       .subscribe({
         next: (products) => {
@@ -116,7 +110,7 @@ export class ProductService {
           this.productsSubject.next(products);
         },
         error: (err) => {
-          console.error('Error fetching products for selected address', err);
+          console.error('Error in product stream', err);
           this.productsSubject.next([]);
           this.isLoadingSubject.next(false);
         },
@@ -180,6 +174,79 @@ export class ProductService {
     return 'US-NC';
   }
 
+  /** Set the active product category (called by UI) */
+  setActiveCategory(category: string): void {
+    if (!category) return;
+    this.activeCategorySubject.next(category);
+  }
+
+  getActiveCategory(): string {
+    return this.activeCategorySubject.value;
+  }
+
+  /** Build product & team URLs for a category and location code */
+  private buildCategoryUrls(
+    category: string,
+    locationCode: string
+  ): { url: string; teamUrl: string } {
+    const cfg = this.categoryConfig[category] || this.categoryConfig['Bike'];
+    const root =
+      cfg.group === 'essentials' ? this.essentialsRoot : this.mediatronicsRoot;
+    const productUrl = `${root}/${cfg.path}/${locationCode}`;
+    const teamUrl = `${root}/${cfg.path}/team`;
+    return { url: productUrl, teamUrl };
+  }
+
+  /** Extract an array from various backend envelope shapes */
+  private extractArrayPayload(resp: any): any[] {
+    if (Array.isArray(resp)) return resp;
+    if (resp && Array.isArray(resp.products)) return resp.products;
+    if (resp && Array.isArray(resp.data)) return resp.data;
+    if (resp && Array.isArray(resp.items)) return resp.items;
+    if (resp && typeof resp === 'object') {
+      const found = Object.values(resp).find((v) => Array.isArray(v));
+      if (found) return found as any[];
+    }
+    console.warn(
+      '[ProductService] unexpected response shape, returning empty array'
+    );
+    return [];
+  }
+
+  /** Normalize raw products into Product interface */
+  private normalizeProducts(rawProducts: any[]): Product[] {
+    return (rawProducts || []).map((rp: any) => {
+      const normalized: Product = {
+        p_id: rp.p_id ?? rp.id,
+        p_type: rp.p_type ?? rp.pType ?? rp.type ?? 'Unknown',
+        p_subtype: rp.p_subtype ?? rp.p_sub_type ?? rp.pSubType ?? undefined,
+        p_name: rp.p_name ?? rp.name ?? 'Unnamed',
+        p_desc: rp.p_desc ?? rp.description ?? '',
+        p_currency: rp.p_currency ?? rp.currency ?? undefined,
+        p_price: Number(rp.p_price) || 0,
+        p_img_url: Array.isArray(rp.p_img_url) ? rp.p_img_url[0] : rp.p_img_url,
+        attribute: rp.attribute ?? rp.attributes ?? {},
+        p_quantity: rp.p_quantity ?? rp.quantity ?? 0,
+      } as Product;
+      if (!normalized.p_subtype && rp.p_sub_type)
+        normalized.p_subtype = rp.p_sub_type;
+      return normalized;
+    });
+  }
+
+  /** Fetch teams for a given category (or active) */
+  getTeamsForCategory(category?: string): Observable<Team[]> {
+    const cat = category || this.getActiveCategory();
+    const { teamUrl } = this.buildCategoryUrls(cat, 'NA'); // location code not required per spec for team endpoint
+    return this.http.get<any>(teamUrl).pipe(
+      map((resp) => this.extractArrayPayload(resp) as Team[]),
+      catchError((err) => {
+        console.error('[ProductService] team fetch failed', err);
+        return of([] as Team[]);
+      })
+    );
+  }
+
   getPaginatedAndFilteredProducts(
     category: string | null,
     pageIndex: number,
@@ -193,13 +260,34 @@ export class ProductService {
       map((products: Product[]) => {
         let filteredProducts: Product[] = products.slice();
 
+        const singularize = (val: string | undefined | null) => {
+          if (!val) return '';
+          const lower = val.toLowerCase();
+          // basic plural removal: bikes -> bike, toys -> toy, laptops -> laptop
+          if (lower.endsWith('ies')) return lower.slice(0, -3) + 'y';
+          if (lower.endsWith('s')) return lower.slice(0, -1);
+          return lower;
+        };
+
+        const matchesCategory = (p: Product, cat: string) => {
+          const catSing = singularize(cat);
+          const typeSing = singularize(p.p_type);
+          const subSing = singularize(p.p_subtype);
+          return (
+            p.p_type === cat ||
+            p.p_subtype === cat ||
+            typeSing === catSing ||
+            subSing === catSing
+          );
+        };
+
         // Step 1: Filter by category FIRST (if one is selected)
         // Match against either the product type OR the subtype because backends
         // sometimes return broader types (e.g. "Essentials") with subtypes
         // like "Bike". Users select categories like "Bike" in the UI.
         if (category) {
-          filteredProducts = filteredProducts.filter(
-            (p) => p.p_type === category || p.p_subtype === category
+          filteredProducts = filteredProducts.filter((p) =>
+            matchesCategory(p, category)
           );
         }
 
@@ -291,10 +379,24 @@ export class ProductService {
     return this.productsSubject.asObservable().pipe(
       filter((p): p is Product[] => p !== null),
       map((products: Product[]) => {
-        // Match category against both p_type and p_subtype to handle backend shapes
-        const categoryProducts = products.filter(
-          (p) => p.p_type === category || p.p_subtype === category
-        );
+        const singularize = (val: string | undefined | null) => {
+          if (!val) return '';
+          const lower = val.toLowerCase();
+          if (lower.endsWith('ies')) return lower.slice(0, -3) + 'y';
+          if (lower.endsWith('s')) return lower.slice(0, -1);
+          return lower;
+        };
+        const catSing = singularize(category);
+        const categoryProducts = products.filter((p) => {
+          const typeSing = singularize(p.p_type);
+          const subSing = singularize(p.p_subtype);
+          return (
+            p.p_type === category ||
+            p.p_subtype === category ||
+            typeSing === catSing ||
+            subSing === catSing
+          );
+        });
         if (categoryProducts.length === 0)
           return { attributes: new Map(), minPrice: 0, maxPrice: 1000 };
         const prices = categoryProducts.map((p) => p.p_price);

@@ -2,35 +2,58 @@
   <h2 class="title">Your Shopping Cart</h2>
 
   <div class="cart-layout">
-    
     <div class="cart-items">
       <ng-container *ngIf="cart.length === 0; else cartBlock">
         <mat-card class="empty-card">
           <mat-icon color="primary">shopping_cart</mat-icon>
           <p>Your cart is empty! The possibilities are endless.</p>
-          <button mat-raised-button color="primary" (click)="gotoLanding()">Start Shopping</button>
+          <button mat-raised-button color="primary" (click)="gotoLanding()">
+            Start Shopping
+          </button>
         </mat-card>
       </ng-container>
 
       <ng-template #cartBlock>
-        <mat-card *ngFor="let item of cart" class="cart-item">
-        <div class="cart-item-content">
-            <img [src]="getProduct(item.p_id)?.p_img_url" alt="Product Image" />
+        <mat-card *ngFor="let item of displayCart" class="cart-item">
+          <div class="cart-item-content">
+            <img
+              [src]="getProduct(item.p_id)?.p_img_url"
+              alt="Product Image"
+              (click)="goToProduct(item.p_id)"
+              class="clickable"
+            />
 
             <div class="details">
-            <h3>{{ getProduct(item.p_id)?.p_name }}</h3>
-            <p>Quantity:</p>
-            <div class="quantity-control">
-                <button mat-mini-button (click)="decreaseQuantity(item)">-</button>
+              <h3 (click)="goToProduct(item.p_id)" class="product-link">
+                {{ getProduct(item.p_id)?.p_name }}
+              </h3>
+              <p class="category" *ngIf="item.category">
+                Category: {{ item.category }}
+              </p>
+              <p>Quantity:</p>
+              <div class="quantity-control">
+                <button mat-mini-button (click)="decreaseQuantity(item)">
+                  -
+                </button>
                 <span>{{ item.quantity }}</span>
-                <button mat-mini-button (click)="increaseQuantity(item)">+</button>
+                <button mat-mini-button (click)="increaseQuantity(item)">
+                  +
+                </button>
+              </div>
+              <p>
+                <strong>{{ currencySymbol }} {{ item.amount }}</strong>
+              </p>
+              <mat-card-actions>
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  (click)="removeFromCart(item.o_id)"
+                >
+                  Remove
+                </button>
+              </mat-card-actions>
             </div>
-            <p><strong>₹ {{ item.amount }}</strong></p>
-            <mat-card-actions>
-                <button mat-stroked-button color="primary" (click)="removeFromCart(item.o_id)">Remove</button>
-            </mat-card-actions>
-            </div>
-        </div>
+          </div>
         </mat-card>
       </ng-template>
     </div>
@@ -39,12 +62,23 @@
     <div class="order-summary">
       <mat-card class="summary-card">
         <h3>Order Summary</h3>
-        <p>Subtotal: {{ totalAmount }}</p>
+        <p>Subtotal: {{ currencySymbol }} {{ totalAmount }}</p>
         <p>Shipping & handling: Free</p>
-        <p><strong>Total: {{ totalAmount }} </strong></p>
+        <p>
+          <strong>Total: {{ currencySymbol }} {{ totalAmount }} </strong>
+        </p>
         <div class="summary-actions">
-          <button mat-raised-button color="accent" [disabled]="cart.length === 0" (click)="checkout()">Secure Checkout</button>
-          <button mat-stroked-button color="primary" (click)="gotoLanding()">Continue Shopping</button>
+          <button
+            mat-raised-button
+            color="accent"
+            [disabled]="cart.length === 0"
+            (click)="checkout()"
+          >
+            Secure Checkout
+          </button>
+          <button mat-stroked-button color="primary" (click)="gotoLanding()">
+            Continue Shopping
+          </button>
         </div>
       </mat-card>
     </div>

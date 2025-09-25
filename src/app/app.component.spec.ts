@@ -19,4 +19,6 @@ describe('AppComponent', () => {
     const app = fixture.componentInstance;
     expect(app.title).toEqual('fidzulu-ui');
   });
+
+  // Removed outdated DOM assertion: template no longer renders <h1> with title.
 });

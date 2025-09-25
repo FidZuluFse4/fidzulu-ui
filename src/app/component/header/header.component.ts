@@ -16,6 +16,7 @@ import { Address } from '../../models/address.model';
 import { AddressDialogComponent } from '../address-dialog/address-dialog.component';
 import { AddressService } from '../../services/address/address.service';
 import { AuthService } from '../../services/auth.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-header',
@@ -40,6 +41,8 @@ export class HeaderComponent implements OnInit {
 
   addresses: Address[] = [];
   selectedAddress!: Address;
+  cartCount = 0;
+  currencySymbol: string = '$';
 
   // Detect screen size changes
   @HostListener('window:resize', ['$event'])
@@ -49,9 +52,11 @@ export class HeaderComponent implements OnInit {
 
   constructor(
     private searchService: SearchService,
-    private router: Router, private authService: AuthService,
+    private router: Router,
+    private authService: AuthService,
     private dialog: MatDialog,
-    private addressService: AddressService
+    private addressService: AddressService,
+    private userService: UserService
   ) {
     this.checkScreenSize();
   }
@@ -80,6 +85,12 @@ export class HeaderComponent implements OnInit {
     // Get the selected address
     this.addressService.getSelectedAddress().subscribe((address) => {
       this.selectedAddress = address;
+      this.currencySymbol = this.locationToSymbol(address?.location);
+    });
+
+    this.userService.cart$.subscribe((cart) => {
+      const total = cart.reduce((sum, o) => sum + o.quantity, 0);
+      this.cartCount = total > 9 ? 9 : total; // keep 0-9 (show 9+ if >9)
     });
   }
 
@@ -100,6 +111,17 @@ export class HeaderComponent implements OnInit {
   }
   goToCart() {
     this.router.navigate(['/cart']);
+  }
+
+  get cartDisplay(): string {
+    const total =
+      this.userService['cartSubject']?.value?.reduce(
+        (s: number, o: any) => s + o.quantity,
+        0
+      ) || 0;
+    if (total === 0) return '';
+    if (total > 9) return '9+';
+    return String(total);
   }
   goToWishlist() {
     this.router.navigate(['/wishlist']);
@@ -124,5 +146,20 @@ export class HeaderComponent implements OnInit {
         this.addressService.setSelectedAddress(result);
       }
     });
+  }
+
+  private locationToSymbol(location?: string): string {
+    if (!location) return '$';
+    const l = location.toLowerCase();
+    if (l.includes('india') || l === 'in') return '₹';
+    if (l.includes('ireland') || l === 'ir') return '€';
+    if (
+      l.includes('usa') ||
+      l.includes('united') ||
+      l.includes('america') ||
+      l === 'us'
+    )
+      return '$';
+    return '$';
   }
 }

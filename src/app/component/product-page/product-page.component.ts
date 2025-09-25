@@ -89,6 +89,8 @@ export class ProductsPageComponent implements OnInit, OnDestroy {
     this.currentFilters = null;
     this.currentPage = 0;
     this.activeCategory = categoryName;
+    // inform product service of active category so it can choose proper endpoint
+    this.productService.setActiveCategory(categoryName);
 
     this.productService
       .getFiltersForCategory(this.activeCategory)
