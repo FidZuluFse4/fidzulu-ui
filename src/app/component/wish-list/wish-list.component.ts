@@ -10,6 +10,9 @@ import { AddressService } from '../../services/address/address.service';
 import { Order } from '../../models/order.model';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-wish-list',
@@ -21,6 +24,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
     MatIconModule,
     MatPaginatorModule,
     MatSnackBarModule,
+    MatProgressSpinnerModule,
+    MatProgressBarModule,
   ],
   templateUrl: './wish-list.component.html',
   styleUrl: './wish-list.component.css',
@@ -35,6 +40,11 @@ export class WishListComponent implements OnInit {
   quantities: { [p_id: string]: number } = {};
   currencySymbol: string = '$';
 
+  // Loading states
+  isLoading = true; // Main loading indicator
+  isCartUpdating: { [p_id: string]: boolean } = {};
+  // Initialize with empty object - don't set any values yet
+
   constructor(
     private userService: UserService,
     private router: Router,
@@ -47,11 +57,27 @@ export class WishListComponent implements OnInit {
   }
 
   ngOnInit() {
+    // Initialize loading state
+    this.isLoading = true;
+
     // Seed state
     this.userService.getCurrentUser().subscribe();
-    this.userService.getWishList().subscribe((list) => {
-      this.wishlist = list;
-    });
+
+    // Get wishlist with loading state
+    this.userService
+      .getWishList()
+      .pipe(
+        finalize(() => {
+          this.isLoading = false;
+        })
+      )
+      .subscribe((list) => {
+        this.wishlist = list;
+
+        // Reset image loading states
+        this.isLoading = false;
+      });
+
     // Reflect cart quantities so wishlist shows live cart state
     this.userService.cart$.subscribe((orders: Order[]) => {
       this.quantities = orders.reduce((acc: any, o) => {
@@ -67,21 +93,28 @@ export class WishListComponent implements OnInit {
 
   // when user clicks initial Add to Cart, set counter to 1 and update backend
   addToCart(product: Product) {
+    this.isCartUpdating[product.p_id] = true;
     this.quantities[product.p_id] = 1;
     this.updateCart(product);
   }
 
   increaseQuantity(product: Product) {
+    this.isCartUpdating[product.p_id] = true;
     this.quantities[product.p_id] = (this.quantities[product.p_id] || 0) + 1;
     this.updateCart(product);
   }
 
   decreaseQuantity(product: Product) {
     if (!this.quantities[product.p_id]) return;
+
+    this.isCartUpdating[product.p_id] = true;
     this.quantities[product.p_id]--;
+
     // if quantity drops to 0, remove the counter from UI
     if (this.quantities[product.p_id] <= 0) {
       delete this.quantities[product.p_id];
+      // Reset loading state since we're not making an API call
+      this.isCartUpdating[product.p_id] = false;
       // do not call backend for zero quantity to avoid accidental removals
       return;
     }
@@ -89,9 +122,17 @@ export class WishListComponent implements OnInit {
   }
 
   removeFromWishlist(p_id: string) {
-    this.userService.removeFromWishlist(p_id).subscribe(() => {
-      this.wishlist = this.wishlist.filter((p) => p.p_id !== p_id);
-    });
+    this.isCartUpdating[p_id] = true;
+    this.userService
+      .removeFromWishlist(p_id)
+      .pipe(
+        finalize(() => {
+          this.isCartUpdating[p_id] = false;
+        })
+      )
+      .subscribe(() => {
+        this.wishlist = this.wishlist.filter((p) => p.p_id !== p_id);
+      });
   }
 
   // Paginator event
@@ -111,23 +152,32 @@ export class WishListComponent implements OnInit {
     const quantity = this.quantities[product.p_id] || 0;
     if (quantity <= 0) return;
 
-    this.userService.addToCart(product.p_id, quantity).subscribe({
-      next: () => {
-        // intentionally no alert/snackbar on success (user requested no alerts)
-      },
-      error: (err) => {
-        console.error('Error updating cart:', err);
-        // show error snackbar so user knows something went wrong
-        this.snackBar.open('Failed to update cart. Try again.', 'Close', {
-          duration: 2500,
-        });
-      },
-    });
+    this.userService
+      .addToCart(product.p_id, quantity)
+      .pipe(
+        finalize(() => {
+          this.isCartUpdating[product.p_id] = false;
+        })
+      )
+      .subscribe({
+        next: () => {
+          // intentionally no alert/snackbar on success (user requested no alerts)
+        },
+        error: (err) => {
+          console.error('Error updating cart:', err);
+          // show error snackbar so user knows something went wrong
+          this.snackBar.open('Failed to update cart. Try again.', 'Close', {
+            duration: 2500,
+          });
+        },
+      });
   }
 
   gotoLanding() {
     this.router.navigate(['/landing']);
   }
+
+  // Image loading methods removed - simplified approach
 
   private locationToSymbol(location?: string): string {
     if (!location) return '$';
