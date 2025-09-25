@@ -126,6 +126,9 @@ export class HeaderComponent implements OnInit {
   goToWishlist() {
     this.router.navigate(['/wishlist']);
   }
+  goToOrderHistory() {
+    this.router.navigate(['/orders']);
+  }
   goToHome() {
     this.router.navigate(['/landing']);
   }
