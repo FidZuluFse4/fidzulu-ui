@@ -57,7 +57,7 @@ export class ProductService {
     Bike: { group: 'essentials', path: 'bikes' },
     Food: { group: 'essentials', path: 'food' },
     Toys: { group: 'essentials', path: 'toys' },
-    Books: { group: 'mediatronics', path: 'books' },
+    Books: { group: 'mediatronics', path: 'books/all' },
     DVD: { group: 'mediatronics', path: 'dvds/all' },
     Laptops: { group: 'mediatronics', path: 'laptops/all' },
   };
