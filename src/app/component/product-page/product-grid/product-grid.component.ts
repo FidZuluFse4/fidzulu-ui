@@ -37,6 +37,7 @@ export class ProductGridComponent implements OnInit {
   isLoading = true; // Overall loading state for initial data fetch
   isWishlistLoading: { [p_id: string]: boolean } = {};
   isCartLoading: { [p_id: string]: boolean } = {};
+  cartIds: Set<string> = new Set();
 
   constructor(
     private router: Router,
@@ -106,11 +107,10 @@ export class ProductGridComponent implements OnInit {
   }
 
   // Add to cart button clicked
-  addToCart(product: Product) {
-    this.isCartLoading[product.p_id] = true;
-    this.quantities[product.p_id] = 1;
-    this.updateCart(product);
-  }
+  // addToCart(product: Product) {
+  //   this.quantities[product.p_id] = 1;
+  //   this.updateCart(product);
+  // }
 
   // Increase quantity
   increaseQuantity(product: Product) {
@@ -200,5 +200,31 @@ export class ProductGridComponent implements OnInit {
           });
         },
       });
+  }
+
+  addToCart(product: Product): void {
+    this.userService.addToCart(product.p_id, 1).subscribe({
+      next: (res: any) => {
+        // After adding, fetch updated cart
+        this.userService.getCart().subscribe({
+          next: (cart: any) => {
+            if (Array.isArray(cart)) {
+              this.cartIds = new Set(cart.map((p: any) => p.p_id));
+            } else if (cart && cart.items && Array.isArray(cart.items)) {
+              this.cartIds = new Set(cart.items.map((p: any) => p.p_id));
+            }
+          },
+        });
+        this.snackBar.open(`${product.p_name} added to cart 🛒`, 'Close', {
+          duration: 2000,
+        });
+      },
+      error: (error) => {
+        console.error('Error adding to cart:', error);
+        this.snackBar.open('Cart update failed', 'Close', {
+          duration: 2000,
+        });
+      },
+    });
   }
 }

@@ -40,29 +40,27 @@ export class CartComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    // Load current products (for price lookups)
-    this.productService.getAllProducts().subscribe((data) => {
-      this.products = data;
-      this.recalculateLineAmounts();
-    });
+  // Load products first
+  this.productService.getAllProducts().subscribe((data) => {
+    this.products = data;
 
-    // Track currency via address
-    this.addressService.getSelectedAddress().subscribe((addr) => {
-      this.currencySymbol = this.locationToSymbol(addr?.location);
-      this.buildDisplayCart();
-    });
-
-    // Reactive cart stream
-    this.userService.cart$.subscribe((cart) => {
+    // Then load cart
+    this.userService.getCart().subscribe((cart) => {
       this.cart = cart;
       this.recalculateLineAmounts();
       this.calculateTotal();
-      this.buildDisplayCart();
+      this.buildDisplayCart(); // Now this will work correctly
     });
+  });
 
-    // Initial sync
-    this.userService.getCurrentUser().subscribe();
-  }
+  // Currency symbol via address
+  this.addressService.getSelectedAddress().subscribe((addr) => {
+    this.currencySymbol = this.locationToSymbol(addr?.location);
+  });
+
+  // Initial sync
+  this.userService.getCurrentUser().subscribe();
+}
 
   getProduct(p_id: string): Product | undefined {
     return this.products.find((p) => p.p_id === p_id);
@@ -89,11 +87,13 @@ export class CartComponent implements OnInit {
   }
 
   removeFromCart(o_id: string) {
-    this.userService.removeFromCart(o_id).subscribe(() => {
-      this.cart = this.cart.filter((o) => o.o_id !== o_id);
-      this.calculateTotal();
-    });
-  }
+  this.userService.removeFromCart(o_id).subscribe(() => {
+    this.cart = this.cart.filter((o) => o.o_id !== o_id);
+    this.calculateTotal();
+    this.buildDisplayCart();
+  });
+}
+
 
   increaseQuantity(item: OrderPage) {
     const target = this.cart.find((o) => o.o_id === item.o_id);
