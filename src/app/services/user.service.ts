@@ -1,10 +1,11 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
 import { User } from '../models/user.model';
 import { Order } from '../models/order.model';
-import { BehaviorSubject, of } from 'rxjs';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
 import { Product } from '../models/product.model';
+import { environment } from '../../environments/environment';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root',
@@ -12,7 +13,11 @@ import { Product } from '../models/product.model';
 export class UserService {
   private baseUrl = 'http://localhost:3000';
 
-  constructor(private http: HttpClient) {}
+  private applicationBaseUrl = environment.applicationUrlBackend;
+
+  private applicationMiddleWareUrl = environment.lambda_1;
+
+  constructor(private http: HttpClient, private authService: AuthService) {}
 
   // getCurrentUser(): Observable<User> {
   //   return this.http.get<User>(`${this.baseUrl}/users/1`);
@@ -58,26 +63,27 @@ export class UserService {
   }
 
   addToWishlist(productId: string): Observable<any> {
-    const mockProduct: Product = {
-      p_id: productId,
-      p_type: 'type1',
-      p_subtype: 'subtype1',
-      p_name: 'Mock Product',
-      p_desc: 'Description',
-      p_currency: 'USD',
-      p_price: 100,
-      p_img_url: 'mock.png',
-      attribute: {},
-      p_quantity: 1,
-    };
-    // Avoid duplicates in wishlist
-    if (!this.mockUser.wishList.some((p) => p.p_id === productId)) {
-      this.mockUser.wishList.push(mockProduct);
+    // Get user_id from AuthService robustly
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    console.log("User_id: " + user_id);
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
     }
-    return of({ success: true });
+    const url = `${this.applicationMiddleWareUrl}/api/wishlist/add`;
+    const body = { user_id: user_id, p_id: productId };
+    return this.http.post(url, body);
   }
 
   removeFromWishlist(productId: string): Observable<any> {
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    console.log("User_id: " + user_id);
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
+    }
+
+    const url = `${this.applicationBaseUrl}/api/wishlist/remove`;
     this.mockUser.wishList = this.mockUser.wishList.filter(
       (p) => p.p_id !== productId
     );
