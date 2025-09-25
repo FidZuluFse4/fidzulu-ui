@@ -1,7 +1,12 @@
 <div class="wishlist-container">
   <h2 class="title">Your Wish List</h2>
 
-  <ng-container *ngIf="wishlist.length === 0; else listBlock">
+  <!-- Main loading spinner -->
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+  </div>
+
+  <ng-container *ngIf="!isLoading && wishlist.length === 0; else listBlock">
     <mat-card class="empty-card">
       <mat-icon color="primary">favorite_border</mat-icon>
       <p>Looks like you dont have any items in your Wish List yet</p>
@@ -22,6 +27,7 @@
             mat-card-image
             [src]="product.p_img_url || '/assets/bottle.jpg'"
             [alt]="product.p_name"
+            [title]="product.p_name"
           />
         </div>
         <mat-card-content>
@@ -40,14 +46,25 @@
                 mat-icon-button
                 color="primary"
                 (click)="decreaseQuantity(product)"
+                [disabled]="isCartUpdating[product.p_id]"
               >
                 <mat-icon>remove</mat-icon>
               </button>
-              <div class="qty-display">{{ quantities[product.p_id] }}</div>
+              <div class="qty-display">
+                <mat-spinner
+                  *ngIf="isCartUpdating[product.p_id]"
+                  diameter="16"
+                  class="qty-spinner"
+                ></mat-spinner>
+                <span *ngIf="!isCartUpdating[product.p_id]">{{
+                  quantities[product.p_id]
+                }}</span>
+              </div>
               <button
                 mat-icon-button
                 color="primary"
                 (click)="increaseQuantity(product)"
+                [disabled]="isCartUpdating[product.p_id]"
               >
                 <mat-icon>add</mat-icon>
               </button>
@@ -58,9 +75,17 @@
                 color="primary"
                 class="add-to-cart-btn"
                 (click)="addToCart(product)"
+                [disabled]="isCartUpdating[product.p_id]"
               >
-                <mat-icon>shopping_cart</mat-icon>
-                Add
+                <mat-spinner
+                  *ngIf="isCartUpdating[product.p_id]"
+                  diameter="20"
+                  class="button-spinner"
+                ></mat-spinner>
+                <ng-container *ngIf="!isCartUpdating[product.p_id]">
+                  <mat-icon>shopping_cart</mat-icon>
+                  Add
+                </ng-container>
               </button>
             </ng-template>
           </div>
@@ -69,6 +94,7 @@
             mat-stroked-button
             color="warn"
             (click)="removeFromWishlist(product.p_id)"
+            [disabled]="isCartUpdating[product.p_id]"
           >
             <mat-icon>delete</mat-icon>
             Remove
