@@ -201,10 +201,32 @@ export class UserService {
 
 
   removeFromCart(orderId: string): Observable<any> {
-    this.mockUser.cart = this.mockUser.cart.filter((o) => o.o_id !== orderId);
-    this.cartSubject.next([...this.mockUser.cart]);
-    return of({ success: true });
+  const user = this.authService.getCurrentUser();
+  const user_id = user && user.user_id ? user.user_id : null;
+  if (!user_id) {
+    return of({ success: false, error: 'User not authenticated' });
   }
+
+  const url = `${this.applicationMiddleWareUrl}/api/order/delete/${encodeURIComponent(orderId)}`;
+  return this.http.delete(url);
+}
+
+updateCartItem(orderId: string, quantity: number, amount: number): Observable<any> {
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
+    }
+
+    const url = `${this.applicationMiddleWareUrl}/order/update/${encodeURIComponent(orderId)}`;
+    const body = {
+      quantity,
+      amount,
+    };
+
+    return this.http.put(url, body);
+  }
+
 
   updateCart(cart: Order[]): Observable<any> {
     this.mockUser.cart = [...cart];
