@@ -72,30 +72,46 @@
             <div *ngFor="let item of order.order_list" class="order-item">
               <!-- Product image and loading states -->
               <div class="item-image-container">
-                <img *ngIf="getProductDetails(item.p_id)?.p_img_url; else defaultImg"
-                  [src]="getProductDetails(item.p_id)?.p_img_url" 
-                  [alt]="getProductDetails(item.p_id)?.p_name || 'Product image'"
-                  [title]="getProductDetails(item.p_id)?.p_name || 'Product image'"
+                <img
+                  *ngIf="
+                    getProductDetails(item.p_id)?.p_img_url;
+                    else defaultImg
+                  "
+                  [src]="getProductDetails(item.p_id)?.p_img_url"
+                  [alt]="
+                    getProductDetails(item.p_id)?.p_name || 'Product image'
+                  "
+                  [title]="
+                    getProductDetails(item.p_id)?.p_name || 'Product image'
+                  "
                   class="product-image"
-                  (error)="handleImageError($event)">
+                  (error)="handleImageError($event)"
+                />
                 <ng-template #defaultImg>
-                  <img [src]="defaultImageUrl" alt="Default product image" class="product-image">
+                  <img
+                    [src]="defaultImageUrl"
+                    alt="Default product image"
+                    class="product-image"
+                  />
                 </ng-template>
-                
+
                 <!-- Loading spinner for product details -->
                 <div *ngIf="isProductLoading(item.p_id)" class="image-loader">
                   <mat-spinner diameter="25"></mat-spinner>
                 </div>
               </div>
-              
+
               <div class="item-details">
                 <span class="item-name">
-                  {{ getProductDetails(item.p_id)?.p_name || 'Product #' + item.p_id }}
+                  {{
+                    getProductDetails(item.p_id)?.p_name ||
+                      "Product #" + item.p_id
+                  }}
                 </span>
                 <span class="item-qty">Qty: {{ item.quantity }}</span>
                 <span class="item-price">${{ item.amount.toFixed(2) }}</span>
               </div>
-              
+
               <button
                 mat-button
                 color="primary"

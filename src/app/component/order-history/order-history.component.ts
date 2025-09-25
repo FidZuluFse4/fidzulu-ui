@@ -73,55 +73,61 @@ export class OrderHistoryComponent implements OnInit {
       this.expandedOrderId = null;
     } else {
       this.expandedOrderId = orderId;
-      
+
       // Load product details when expanding an order
-      const order = this.orders.find(o => o.orders_id === orderId);
+      const order = this.orders.find((o) => o.orders_id === orderId);
       if (order) {
         this.loadProductDetailsForOrder(order);
       }
     }
   }
-  
+
   // Load product details for an entire order
   loadProductDetailsForOrder(order: Orders): void {
-    order.order_list.forEach(item => {
+    order.order_list.forEach((item) => {
       if (!this.productDetails.has(item.p_id)) {
         this.loadProductDetails(item.p_id);
       }
     });
   }
-  
+
   // Load details for a specific product
   loadProductDetails(productId: string): void {
     // Set loading state
     this.productLoadingStates.set(productId, true);
     this.productLoadingErrors.delete(productId);
-    
-    this.productService.getProductById(productId).pipe(
-      catchError(error => {
-        console.error(`Error loading product ${productId}:`, error);
-        this.productLoadingErrors.set(productId, 'Could not load product details');
+
+    this.productService
+      .getProductById(productId)
+      .pipe(
+        catchError((error) => {
+          console.error(`Error loading product ${productId}:`, error);
+          this.productLoadingErrors.set(
+            productId,
+            'Could not load product details'
+          );
+          this.productLoadingStates.set(productId, false);
+          return of(null);
+        })
+      )
+      .subscribe((product) => {
+        if (product) {
+          this.productDetails.set(productId, product);
+        }
         this.productLoadingStates.set(productId, false);
-        return of(null);
-      })
-    ).subscribe(product => {
-      if (product) {
-        this.productDetails.set(productId, product);
-      }
-      this.productLoadingStates.set(productId, false);
-    });
+      });
   }
-  
+
   // Get product details if available
   getProductDetails(productId: string): Product | undefined {
     return this.productDetails.get(productId);
   }
-  
+
   // Check if product is loading
   isProductLoading(productId: string): boolean {
     return this.productLoadingStates.get(productId) || false;
   }
-  
+
   // Check if product has loading error
   hasProductError(productId: string): boolean {
     return this.productLoadingErrors.has(productId);
@@ -151,7 +157,7 @@ export class OrderHistoryComponent implements OnInit {
   navigateToHome(): void {
     this.router.navigate(['/']);
   }
-  
+
   // Handle image loading errors
   handleImageError(event: Event): void {
     const imgElement = event.target as HTMLImageElement;
