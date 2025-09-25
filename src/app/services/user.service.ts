@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
 import { Order } from '../models/order.model';
-import { BehaviorSubject, of, Observable } from 'rxjs';
+import { BehaviorSubject, of, Observable, switchMap, combineLatest, catchError } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { ProductService } from './product.service';
 import { Product } from '../models/product.model';
@@ -89,24 +89,35 @@ export class UserService {
     return res;
   }
 
-  getWishList() :Observable<any> {
+  getWishList(): Observable<Product[]> {
     const user = this.authService.getCurrentUser();
     const user_id = user && user.user_id ? user.user_id : null;
-    console.log("User_id: " + user_id);
     if (!user_id) {
-      return of({ success: false, error: 'User not authenticated' });
+      return of([]);
     }
     const url = `${this.applicationMiddleWareUrl}/api/wishlist/${user_id}`;
-    const res = this.http.get(url);
-    return res;
+    return this.http.get<{ wishlist: string[] }>(url).pipe(
+      // Assume backend returns { wishlist: [p_id, ...] }
+      switchMap((resp) => {
+        const ids = Array.isArray(resp) ? resp : resp.wishlist;
+        if (!ids || ids.length === 0) return of([]);
+        // Fetch all products by id in parallel
+        const productCalls = ids.map((id: string) => this.productService.getProductById(id));
+        return productCalls.length ? combineLatest(productCalls) : of([]);
+      }),
+      catchError(() => of([]))
+    );
   }
 
   removeFromWishlist(productId: string): Observable<any> {
-    this.mockUser.wishList = this.mockUser.wishList.filter(
-      (p) => p.p_id !== productId
-    );
-    this.wishlistSubject.next([...this.mockUser.wishList]);
-    return of({ success: true });
+    const user = this.authService.getCurrentUser();
+    const user_id = user && user.user_id ? user.user_id : null;
+    if (!user_id) {
+      return of({ success: false, error: 'User not authenticated' });
+    }
+    // Use DELETE with query params for RESTful API
+    const url = `${this.applicationMiddleWareUrl}/api/wishlist/remove?user_id=${encodeURIComponent(user_id)}&p_id=${encodeURIComponent(productId)}`;
+    return this.http.delete(url);
   }
 
   isInWishlist(productId: string): boolean {
