@@ -136,6 +136,9 @@ export class ProductService {
    * @returns Observable with the requested product
    */
   getProductById(id: string): Observable<Product> {
+    // Ensure the address listener is started
+    this.startAddressListener();
+
     // Determine category from id prefix
     let category: string | undefined;
     if (id.startsWith('F')) category = 'Food';
@@ -144,52 +147,60 @@ export class ProductService {
     else if (id.startsWith('D')) category = 'DVD';
     else if (id.startsWith('LP')) category = 'Laptops';
     else if (id.startsWith('T')) category = 'Toys';
-    // fallback: try all categories if not matched
-combineLatest([
-      this.addressService.getSelectedAddress(),
-      this.activeCategory$,
-    ]);
-    let locationCode = 'US-NC';
-    this.addressService.getSelectedAddress().pipe(
-      map(address => address?.location ? this.mapLocationToCode(address.location) : 'US-NC')
-    ).subscribe(code => {
-      locationCode = code;
-    });
-    // Build URL from categoryConfig
-    const cfg = category ? this.categoryConfig[category] : undefined;
-    let url: string | undefined;
-    if (cfg) {
-      const root = cfg.group === 'essentials' ? this.essentialsRoot : this.mediatronicsRoot;
-      url = `${root}/${cfg.path}/${locationCode}/${id}`;
-    }
 
-    if (url) {
-      return this.http.get<any>(url).pipe(
-        map((resp) => {
-          // Normalize single product response
-          const arr = this.extractArrayPayload(resp);
-          if (arr.length > 0) return this.normalizeProducts(arr)[0];
-          // If backend returns object, try to normalize directly
-          if (resp && typeof resp === 'object' && !Array.isArray(resp)) {
-            return this.normalizeProducts([resp])[0];
-          }
-          throw new Error(`Product with id ${id} not found`);
-        })
-      );
-    } else {
-      // fallback to local cache
-      this.startAddressListener();
-      return this.productsSubject.asObservable().pipe(
-        filter((p): p is Product[] => p !== null),
-        map((products) => {
-          const product = products.find((p) => p.p_id === id);
-          if (!product) {
-            throw new Error(`Product with id ${id} not found`);
-          }
-          return product;
-        })
-      );
-    }
+    return this.addressService.getSelectedAddress().pipe(
+      switchMap((address) => {
+        const locationCode = this.mapLocationToCode(address?.location);
+        const categoryToUse = category || this.getActiveCategory();
+        const cfg = this.categoryConfig[categoryToUse];
+
+        if (cfg) {
+          const root =
+            cfg.group === 'essentials'
+              ? this.essentialsRoot
+              : this.mediatronicsRoot;
+          const url = `${root}/${cfg.path}/${locationCode}/${id}`;
+
+          return this.http.get<any>(url).pipe(
+            map((resp) => {
+              // Normalize single product response
+              const arr = this.extractArrayPayload(resp);
+              if (arr.length > 0) return this.normalizeProducts(arr)[0];
+              // If backend returns object, try to normalize directly
+              if (resp && typeof resp === 'object' && !Array.isArray(resp)) {
+                return this.normalizeProducts([resp])[0];
+              }
+              throw new Error(`Product with id ${id} not found`);
+            }),
+            catchError(() => {
+              // On error, fall back to cached products
+              return this.productsSubject.asObservable().pipe(
+                filter((p): p is Product[] => p !== null),
+                map((products) => {
+                  const product = products.find((p) => p.p_id === id);
+                  if (!product) {
+                    throw new Error(`Product with id ${id} not found`);
+                  }
+                  return product;
+                })
+              );
+            })
+          );
+        } else {
+          // No matching category config, fall back to cached products
+          return this.productsSubject.asObservable().pipe(
+            filter((p): p is Product[] => p !== null),
+            map((products) => {
+              const product = products.find((p) => p.p_id === id);
+              if (!product) {
+                throw new Error(`Product with id ${id} not found`);
+              }
+              return product;
+            })
+          );
+        }
+      })
+    );
   }
 
   /**
